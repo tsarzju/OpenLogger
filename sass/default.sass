@@ -1,0 +1,19 @@
+@mixin fixedTextarea($width, $height)
+  width: $width
+  min-width: $width
+  max-width: $width
+  height: $height
+  min-height: $height
+  max-height: $height
+
+textarea
+  @include fixedTextarea(400px, 600px)
+
+code
+  font-family: monospace
+
+.syntaxhighlighter
+  width: 400px
+  height: 450px
+  overflow-y: auto !important
+  overflow-x: auto !important
