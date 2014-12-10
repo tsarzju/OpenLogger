@@ -5,11 +5,29 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['node-syntaxhighlighter'], function(nsh){
+requirejs(['file'], function(file){
   var gui = require('nw.gui');
   $(function(){
+    function clickInput(id) {
+      $('#'+id).click();
+    }
 
-    $('#preview').html(nsh.highlight($('#precode').html(), nsh.getLanguage('plain')));
+    $('#import').bind('change', function(e) {
+      gui.Window.get().title = $(this).val();
+      file.open($(this).val(), $);
+    });
+
+    $('#preview').hide();
+    $('#showPreview').bind('click', function(e) {
+      if ($(this).hasClass('active') === false) {
+        $('#preview').show(700);
+        $(this).addClass('active');
+      } else {
+        $('#preview').hide(700);
+        $(this).removeClass('active');
+      }
+    });
+
 
     var menu = new gui.Menu({type : 'menubar'});
 
@@ -19,7 +37,7 @@ requirejs(['node-syntaxhighlighter'], function(nsh){
     }));
 
     appendSubmenu(menu.items[0], 'Import', function(){
-
+      clickInput('import');
     });
 
     appendSubmenu(menu.items[0], 'Export', function(){

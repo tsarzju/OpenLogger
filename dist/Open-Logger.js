@@ -5,9 +5,12 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs([], function(){
+requirejs(['node-syntaxhighlighter'], function(nsh){
   var gui = require('nw.gui');
   $(function(){
+
+    $('#preview').html(nsh.highlight($('#precode').html(), nsh.getLanguage('plain')));
+
     var menu = new gui.Menu({type : 'menubar'});
 
     menu.append(new gui.MenuItem({

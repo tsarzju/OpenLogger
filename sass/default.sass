@@ -1,3 +1,5 @@
+@import compass/css3/border-radius
+
 @mixin fixedTextarea($width, $height)
   width: $width
   min-width: $width
@@ -13,7 +15,9 @@ code
   font-family: monospace
 
 .syntaxhighlighter
-  width: 400px
-  height: 450px
-  overflow-y: auto !important
-  overflow-x: auto !important
+  @include border-radius(3px, 3px)
+  border: 1px dotted #808080
+  border-radius: 3px
+  max-height: 500px
+  overflow: auto
+  padding: 1px 1px 2px 2px

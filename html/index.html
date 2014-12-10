@@ -5,63 +5,19 @@
   </title>
   <link rel="stylesheet" href="../css/default.css" />
   <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shCore.css" />
-  <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shThemeDefault.css">
-  <script src='../js/jquery-2.1.1.js'></script>
-  <script src='../script/main.js'></script>
+  <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shThemeDefault.css" / >
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css" />
+  <script src="../js/jquery-2.1.1.js"></script>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="../script/main.js"></script>
 </head>
 <body>
     <div>
-      Preview of loaded file
+      <h4>File Preview</h4>
+      <button type="button" id="showPreview" class="btn btn-default btn-sm">Show</button>
     </div>
-    <div id='preview'>
-
-    </div>
-    <div>
-      <pre id='precode' class='brush: plain'>abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-        abcdef
-        abcdefabcdefabcdefabcdef
-        abcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdefabcdef
-        abcdefabcdefabcdefabcdef
-      </pre>
-
-    </div>
+    <div id="preview"></div>
+    <input id="import" type="file" style="display:none" accept="text/*" />
+    <span id="filePath" style="display:none" />
 </body>
 </html>
