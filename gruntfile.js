@@ -1,25 +1,22 @@
 module.exports = function(grunt){
 
-  // 项目配置
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    concat : {
-      options: {
-        separator: ';'
-      },
-      dist: {
-        src: ['script/*.js'],
-        dest: 'dist/<%= pkg.name %>.js'
-      }
-    },
     uglify: {
       options: {
         banner: '/*! <%= pkg.name %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
       },
-      dist: {
-        files: {
-          'dist/<%= pkg.name %>.min.js': ['<%= concat.dist.dest %>']
-        }
+      dynamic_mappings : {
+        files: [
+      	  {
+	    expand: true,     // Enable dynamic expansion.
+            cwd: 'script/',      // Src matches are relative to this path.
+	    src: ['**/*.js'], // Actual pattern(s) to match.
+            dest: 'build/',   // Destination path prefix.
+	    ext: '.min.js',   // Dest filepaths will have this extension.
+	    extDot: 'first'   // Extensions in filenames begin after the first dot
+	}
+      ]
       }
     },
     jshint: {
@@ -61,5 +58,5 @@ module.exports = function(grunt){
 
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['jshint', 'concat', 'uglify']);
+  grunt.registerTask('default', ['jshint','uglify']);
 };
