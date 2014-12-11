@@ -1,9 +1,7 @@
 define(['node-syntaxhighlighter', 'fs'], function(nsh, fs){
-  function open(path, $) {
+  function open(path, $, callback) {
     fs.readFile(path, 'utf-8', function(error, contents) {
-      nsh.sh.defaults['auto-links'] = false;
-      $('#preview').html(nsh.highlight(contents, nsh.getLanguage('plain')));
-      $('#filePath').val(path);
+      callback(contents, path);
     });
   }
 

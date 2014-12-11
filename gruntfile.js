@@ -1,5 +1,4 @@
 module.exports = function(grunt){
-
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     uglify: {
@@ -9,14 +8,14 @@ module.exports = function(grunt){
       dynamic_mappings : {
         files: [
       	  {
-	    expand: true,     // Enable dynamic expansion.
+            expand: true,     // Enable dynamic expansion.
             cwd: 'script/',      // Src matches are relative to this path.
-	    src: ['**/*.js'], // Actual pattern(s) to match.
+            src: ['**/*.js'], // Actual pattern(s) to match.
             dest: 'build/',   // Destination path prefix.
-	    ext: '.min.js',   // Dest filepaths will have this extension.
-	    extDot: 'first'   // Extensions in filenames begin after the first dot
-	}
-      ]
+            ext: '.min.js',   // Dest filepaths will have this extension.
+            extDot: 'first'   // Extensions in filenames begin after the first dot
+          }
+        ]
       }
     },
     jshint: {
@@ -58,5 +57,5 @@ module.exports = function(grunt){
 
 
   grunt.registerTask('test', ['jshint']);
-  grunt.registerTask('default', ['jshint','uglify']);
+  grunt.registerTask('default', ['jshint','uglify', 'compass']);
 };

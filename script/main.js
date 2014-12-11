@@ -5,19 +5,28 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['file'], function(file){
+requirejs(['node-syntaxhighlighter', 'file'], function(nsh, file){
   var gui = require('nw.gui');
   $(function(){
+    initPage();
+
     function clickInput(id) {
       $('#'+id).click();
     }
 
     $('#import').bind('change', function(e) {
       gui.Window.get().title = $(this).val();
-      file.open($(this).val(), $);
+      file.open($(this).val(), $, function(contents, path) {
+        nsh.sh.defaults['auto-links'] = false;
+        $('#preview').html(nsh.highlight(contents, nsh.getLanguage('plain')));
+        $('#showPreview').show();
+        $('#showPreview').addClass('active');
+        $('#preview').show(700);
+        $('#filePath').val(path);
+        $('#filterDiv').show(700);
+      });
     });
 
-    $('#preview').hide();
     $('#showPreview').bind('click', function(e) {
       if ($(this).hasClass('active') === false) {
         $('#preview').show(700);
@@ -65,5 +74,10 @@ requirejs(['file'], function(file){
     menuItem.submenu.append(new gui.MenuItem({
       type : 'separator'
     }));
+  }
+
+  function initPage(){
+    $('#preview').hide(0);
+    $('#showPreview').hide(0);
   }
 });

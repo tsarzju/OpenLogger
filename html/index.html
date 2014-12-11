@@ -5,18 +5,28 @@
   </title>
   <link rel="stylesheet" href="../css/default.css" />
   <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shCore.css" />
-  <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shThemeDefault.css" / >
+  <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shThemeRDark.css" / >
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css" />
   <script src="../js/jquery-2.1.1.js"></script>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
-  <script src="../dist/Open-Logger.js"></script>
+  <script src="../script/main.js"></script>
 </head>
 <body>
     <div>
-      <h4>File Preview</h4>
-      <button type="button" id="showPreview" class="btn btn-default btn-sm">Show</button>
+      <span class="title">File Preview</span>
+      <button type="button" id="showPreview" class="btn btn-default btn-xs" style="display: none;">Show</button>
     </div>
     <div id="preview"></div>
+
+    <div id="filterDiv" style="display: none;">
+      <span class="title">Filter</span>
+      <button type="button" id="startFilter" class="btn btn-default btn-xs">Start</button>
+      Time From <input id="startTime" type="datetime-local"></input>
+      to <input id="endTime" type="datetime-local"></input>
+    </div>
+
+
+
     <input id="import" type="file" style="display:none" accept="text/*" />
     <span id="filePath" style="display:none" />
 </body>
