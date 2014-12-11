@@ -38,3 +38,8 @@ span.title {
   font-size: 1.2em;
   margin: 5px 10px 5px;
 }
+
+/* line 38, ../sass/default.sass */
+.logDiv {
+  display: none;
+}

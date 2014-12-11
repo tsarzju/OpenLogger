@@ -12,13 +12,13 @@
   <script src="../script/main.js"></script>
 </head>
 <body>
-    <div>
+    <div id="previewControl" class="logDiv">
       <span class="title">File Preview</span>
-      <button type="button" id="showPreview" class="btn btn-default btn-xs" style="display: none;">Show</button>
+      <button type="button" id="showPreview" class="btn btn-default btn-xs">Show</button>
     </div>
-    <div id="preview"></div>
+    <div id="previewContent" class="logDiv"></div>
 
-    <div id="filterDiv" style="display: none;">
+    <div id="filterControl" class="logDiv">
       <span class="title">Filter</span>
       <button type="button" id="startFilter" class="btn btn-default btn-xs">Start</button>
       Time From <input id="startTime" type="datetime-local"></input>

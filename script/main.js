@@ -8,31 +8,27 @@ requirejs.config({
 requirejs(['node-syntaxhighlighter', 'file'], function(nsh, file){
   var gui = require('nw.gui');
   $(function(){
-    initPage();
-
     function clickInput(id) {
       $('#'+id).click();
     }
 
     $('#import').bind('change', function(e) {
       gui.Window.get().title = $(this).val();
-      file.open($(this).val(), $, function(contents, path) {
+      file.open($(this).val(), function(path, contents) {
         nsh.sh.defaults['auto-links'] = false;
-        $('#preview').html(nsh.highlight(contents, nsh.getLanguage('plain')));
-        $('#showPreview').show();
+        $('#previewContent').html(nsh.highlight(contents, nsh.getLanguage('plain')));
         $('#showPreview').addClass('active');
-        $('#preview').show(700);
         $('#filePath').val(path);
-        $('#filterDiv').show(700);
+        $('.logDiv').show(700);
       });
     });
 
     $('#showPreview').bind('click', function(e) {
       if ($(this).hasClass('active') === false) {
-        $('#preview').show(700);
+        $('#previewContent').show(700);
         $(this).addClass('active');
       } else {
-        $('#preview').hide(700);
+        $('#previewContent').hide(700);
         $(this).removeClass('active');
       }
     });
@@ -74,10 +70,5 @@ requirejs(['node-syntaxhighlighter', 'file'], function(nsh, file){
     menuItem.submenu.append(new gui.MenuItem({
       type : 'separator'
     }));
-  }
-
-  function initPage(){
-    $('#preview').hide(0);
-    $('#showPreview').hide(0);
   }
 });

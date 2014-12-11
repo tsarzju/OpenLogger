@@ -1,13 +1,14 @@
-define(['node-syntaxhighlighter', 'fs'], function(nsh, fs){
-  function open(path, $, callback) {
-    fs.readFile(path, 'utf-8', function(error, contents) {
-      callback(contents, path);
+define(['fs', 'iconv-lite', 'config'], function(fs, iconv, config){
+  function open(path, callback) {
+    fs.readFile(path, function(error, contents) {
+      if (error) return;
+      var data = iconv.decode(contents, config.encoding);
+      callback(path, data);
     });
   }
 
-  function save(path, $) {
-    var text = $('#editor').val();
-    fs.writeFile(path, text);
+  function save(path, contents) {
+    fs.writeFile(path, contents);
   }
 
   return {
