@@ -5,11 +5,11 @@
     "toolbar": false,
     "position": "center",
     "width": 1500,
-    "height": 750,
+    "height":1200,
     "min_width": 1500,
-    "min_height": 750,
+    "min_height": 1200,
     "max_width": 1500,
-    "max_height": 750
+    "max_height": 1200
   },
   "devDependencies": {
     "grunt": "^0.4.5",

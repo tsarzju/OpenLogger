@@ -4,25 +4,27 @@
     Open Logger
   </title>
   <link rel="stylesheet" href="../css/default.css" />
+  <link rel="stylesheet" href="../css/jquery-ui.css" />
   <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shCore.css" />
   <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shThemeRDark.css" / >
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css" />
   <script src="../js/jquery-2.1.1.js"></script>
+  <script src="../js/jquery-ui.js"></script>
+  <script src="../js/jquery-ui-timepicker-addon.js"></script>
   <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
   <script src="../script/main.js"></script>
 </head>
 <body>
     <div id="previewControl" class="logDiv">
       <span class="title">File Preview</span>
-      <button type="button" id="showPreview" class="btn btn-default btn-xs">Show</button>
     </div>
     <div id="previewContent" class="logDiv"></div>
 
     <div id="filterControl" class="logDiv">
       <span class="title">Filter</span>
       <button type="button" id="startFilter" class="btn btn-default btn-xs">Start</button>
-      Time From <input id="startTime" type="datetime-local"></input>
-      to <input id="endTime" type="datetime-local"></input>
+      Time From <input id="startTime"></input>
+      To <input id="endTime"></input>
     </div>
 
 

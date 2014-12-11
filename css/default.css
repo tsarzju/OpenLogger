@@ -3,9 +3,9 @@ textarea {
   width: 400px;
   min-width: 400px;
   max-width: 400px;
-  height: 600px;
-  min-height: 600px;
-  max-height: 600px;
+  height: 400px;
+  min-height: 400px;
+  max-height: 400px;
 }
 
 /* line 14, ../sass/default.sass */
@@ -42,4 +42,59 @@ span.title {
 /* line 38, ../sass/default.sass */
 .logDiv {
   display: none;
+}
+
+/* line 41, ../sass/default.sass */
+input[type=datetime-local] {
+  margin: 5px 10px 5px;
+}
+
+/* line 45, ../sass/default.sass */
+.ui-timepicker-div .ui-widget-header {
+  margin-bottom: 8px;
+}
+/* line 48, ../sass/default.sass */
+.ui-timepicker-div dl {
+  text-align: left;
+}
+/* line 50, ../sass/default.sass */
+.ui-timepicker-div dl dt {
+  float: left;
+  clear: left;
+  padding: 0 0 0 5px;
+}
+/* line 55, ../sass/default.sass */
+.ui-timepicker-div dl dd {
+  margin: 0 10px 10px 45%;
+}
+/* line 59, ../sass/default.sass */
+.ui-timepicker-div td {
+  font-size: 90%;
+}
+
+/* line 63, ../sass/default.sass */
+.ui-tpicker-grid-label {
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* line 69, ../sass/default.sass */
+.ui-timepicker-rtl {
+  direction: rtl;
+}
+/* line 71, ../sass/default.sass */
+.ui-timepicker-rtl dl {
+  text-align: right;
+  padding: 0 5px 0 0;
+}
+/* line 74, ../sass/default.sass */
+.ui-timepicker-rtl dl dt {
+  float: right;
+  clear: right;
+}
+/* line 78, ../sass/default.sass */
+.ui-timepicker-rtl dl dd {
+  margin: 0 45% 10px 10px;
 }
