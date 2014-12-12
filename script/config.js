@@ -3,6 +3,7 @@ define(['fs'], function(fs){
   var hasError = false;
   try {
     config = JSON.parse(fs.readFileSync('config.ini', 'utf8'));
+    config.fullFormat = config.dateFormat + ' ' + config.timeFormat + config.lastFormat;
   } catch(error) {
     hasError = true;
   }

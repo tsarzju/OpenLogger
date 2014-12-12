@@ -5,8 +5,9 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(nsh, file, config, LogEntity){
+requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], function(nsh, file, config, LogEntity, moment){
   var gui = require('nw.gui');
+  var lines = [];
   var allLogs = [];
   $(function(){
     initPreview();
@@ -62,7 +63,7 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(ns
       gui.Window.get().title = $(this).val();
       file.open($(this).val(), function(path, contents) {
         currentCursor = 0;
-        var lines = contents.split('\n');
+        lines = contents.split('\n');
         processLines(lines);
         for (var i=0; i<10; ++i) {
           console.log(allLogs[i].time);
@@ -97,26 +98,26 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(ns
     });
   }
 
-  function nextData(lines, currentCursor, size) {
+  function nextData(_lines, currentCursor, size) {
     var endCursor = currentCursor + size;
-    if (endCursor >= lines.length) {
-      endCursor = lines.length - 1;
+    if (endCursor >= _lines.length) {
+      endCursor = _lines.length - 1;
     }
     if (endCursor === currentCursor) {
       return;
     } else {
       return {
         endCursor : endCursor,
-        contents : lines.slice(0, endCursor).join('\n')
+        contents : _lines.slice(0, endCursor).join('\n')
       };
     }
   }
 
-  function processLines(lines) {
+  function processLines(_lines) {
     var currentLog;
     var newLinePattern = new RegExp(/^\[([^\[\]]*)\]/);
     var logPattern = new RegExp(/\[([^\[\]]*)\]\s*(\S*)\s*(\S*)\s*(\S*)\s*(.*)/);
-    lines.forEach(function(line){
+    _lines.forEach(function(line, index){
       var isNewLine = line.match(newLinePattern);
       if (isNewLine) {
         if (currentLog) {
@@ -124,7 +125,7 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(ns
         }
         currentLog = new LogEntity();
         var logMatch = line.match(logPattern);
-        currentLog.update(logMatch[1], logMatch[2], logMatch[3],
+        currentLog.update(index, logMatch[1], logMatch[2], logMatch[3],
           logMatch[4], logMatch[5]);
       } else {
         if (currentLog === undefined) {
@@ -148,16 +149,45 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(ns
     });
 
     $('#startFilter').on('click', function(){
-      var startTime = $('#startTime').val();
-      var endTime = $('#endTime').val();
-      if (startTime === "" || endTime ==="") {
-        return;
+      console.log('click');
+      var startTimeStr = $('#startTime').val();
+      var endTimeStr = $('#endTime').val();
+      var startTime;
+      var endTime;
+      console.log('startTimeStr : ' + startTimeStr);
+      console.log('endTimeStr : ' + endTimeStr);
+      if (startTimeStr) {
+        startTime = moment(startTimeStr, config.fullFormat);
       }
-      var result = [];
-      var append =
-      lines.forEach(function(line) {
-
+      if (endTimeStr) {
+        endTime = moment(endTimeStr, config.fullFormat);
+      }
+      var results = [];
+      console.log('allLogs : ' + allLogs.length);
+      allLogs.forEach(function(logEntity) {
+        var logTime = moment(logEntity.time.substring(0, logEntity.time.length + config.adjustSize-1), config.fullFormat);
+        if (betweenTime(logTime, startTime, endTime)) {
+          results.push(logEntity);
+        }
       });
+      console.log('results : ' + results.length);
+      var resultLines = [];
+      results.forEach(function(result) {
+        resultLines.push(lines[result.lineNumber]);
+      });
+      $('#filterContent').html(nsh.highlight(resultLines.join('\n'), nsh.getLanguage('plain')));
     });
+  }
+
+  function betweenTime(target, start, end) {
+    if (start && end) {
+      return ((target.isAfter(start) || target.isSame(start)) && (target.isBefore(end) || target.isSame(end)));
+    } else if (start) {
+      return (target.isAfter(start) || target.isSame(start));
+    } else if (end) {
+      return (target.isBefore(end) || target.isSame(end));
+    } else {
+      return true;
+    }
   }
 });
