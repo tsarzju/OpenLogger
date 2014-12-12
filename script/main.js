@@ -5,31 +5,13 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['node-syntaxhighlighter', 'file', 'config'], function(nsh, file, config){
+requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(nsh, file, config, LogEntity){
   var gui = require('nw.gui');
+  var allLogs = [];
   $(function(){
-    var lines = [];
-
     initPreview();
     initMenu();
-
-    $('#startTime').datetimepicker({
-      dateFormat: config.dateFormat,
-      timeFormat: config.timeFormat,
-    });
-
-    $('#endTime').datetimepicker({
-      dateFormat: config.dateFormat,
-      timeFormat: config.timeFormat,
-    });
-
-    $('#startFilter').on('click', function(){
-      var startTime = $('#startTime').val();
-      var endTime = $('#endTime').val();
-      if (startTime === "" || endTime ==="") {
-        return;
-      }
-    });
+    initFilter();
   });
 
   function appendSubmenu(menuItem, label, callback) {
@@ -80,8 +62,11 @@ requirejs(['node-syntaxhighlighter', 'file', 'config'], function(nsh, file, conf
       gui.Window.get().title = $(this).val();
       file.open($(this).val(), function(path, contents) {
         currentCursor = 0;
-        lines = contents.split('\n');
-
+        var lines = contents.split('\n');
+        processLines(lines);
+        for (var i=0; i<10; ++i) {
+          console.log(allLogs[i].toString());
+        }
         var result = nextData(lines, currentCursor, 1000);
 
         if (result) {
@@ -125,5 +110,54 @@ requirejs(['node-syntaxhighlighter', 'file', 'config'], function(nsh, file, conf
         contents : lines.slice(0, endCursor).join('\n')
       };
     }
+  }
+
+  function processLines(lines) {
+    var currentLog;
+    var newLinePattern = new RegExp(/^\[([^\[\]]*)\]/);
+    var logPattern = new RegExp(/\[([^\[\]]*)\]\s*(\S*)\s*(\S*)\s*(\S*)\s*(.*)/);
+    lines.forEach(function(line){
+      var isNewLine = line.match(newLinePattern);
+      if (isNewLine) {
+        if (currentLog) {
+          allLogs.push(currentLog);
+        }
+        currentLog = new LogEntity();
+        var logMatch = line.match(logPattern);
+        currentLog.update(logMatch[1], logMatch[2], logMatch[3],
+          logMatch[4], logMatch[5]);
+      } else {
+        if (currentLog === undefined) {
+          return;
+        } else {
+          currentLog.appendMessage(line);
+        }
+      }
+    });
+  }
+
+  function initFilter() {
+    $('#startTime').datetimepicker({
+      dateFormat: config.dateFormat,
+      timeFormat: config.timeFormat,
+    });
+
+    $('#endTime').datetimepicker({
+      dateFormat: config.dateFormat,
+      timeFormat: config.timeFormat,
+    });
+
+    $('#startFilter').on('click', function(){
+      var startTime = $('#startTime').val();
+      var endTime = $('#endTime').val();
+      if (startTime === "" || endTime ==="") {
+        return;
+      }
+      var result = [];
+      var append =
+      lines.forEach(function(line) {
+
+      });
+    });
   }
 });
