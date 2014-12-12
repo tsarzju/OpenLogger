@@ -17,25 +17,13 @@ define([], function() {
 
   LogEntity.prototype = {
     constructor : LogEntity,
+
     update : update,
-    setTime : function(time) {
-      this.time = time;
-    },
-    setThreadId : function(threadId) {
-      this.threadId = threadId;
-    },
-    setProducer : function(producer) {
-      this.producer = producer;
-    },
-    setType : function(type) {
-      this.type = type;
-    },
-    setMessage : function(message) {
-      this.message = message;
-    },
+
     appendMessage : function(appendContent) {
       this.message = this.message + '\n' + appendContent;
     },
+    
     toString : function() {
       return 'time : ' + this.time +
         '\nthreadId : ' + this.threadId +

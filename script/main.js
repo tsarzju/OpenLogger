@@ -65,7 +65,7 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity'], function(ns
         var lines = contents.split('\n');
         processLines(lines);
         for (var i=0; i<10; ++i) {
-          console.log(allLogs[i].toString());
+          console.log(allLogs[i].time);
         }
         var result = nextData(lines, currentCursor, 1000);
 
