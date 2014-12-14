@@ -31,66 +31,54 @@ code {
   font-family: monospace;
 }
 
-/* line 31, ../sass/default.sass */
-.syntaxhighlighter {
-  -moz-border-radius: 3px / 3px;
-  -webkit-border-radius: 3px 3px;
-  border-radius: 3px / 3px;
-  border: 1px dotted #808080;
-  border-radius: 3px;
-  max-height: 300px;
-  overflow: auto;
-  padding: 1px 1px 2px 2px;
-}
-
-/* line 42, ../sass/default.sass */
+/* line 34, ../sass/default.sass */
 div {
   border-bottom-style: solid;
   border-width: 1px;
   margin: 0px 10px 0px;
 }
 
-/* line 47, ../sass/default.sass */
+/* line 39, ../sass/default.sass */
 span.title {
   color: blue;
   font-size: 1.2em;
   margin: 5px 10px 5px;
 }
 
-/* line 52, ../sass/default.sass */
+/* line 44, ../sass/default.sass */
 .logDiv {
   display: none;
 }
 
-/* line 55, ../sass/default.sass */
+/* line 47, ../sass/default.sass */
 input[type=datetime-local] {
   margin: 5px 10px 5px;
 }
 
-/* line 59, ../sass/default.sass */
+/* line 51, ../sass/default.sass */
 .ui-timepicker-div .ui-widget-header {
   margin-bottom: 8px;
 }
-/* line 62, ../sass/default.sass */
+/* line 54, ../sass/default.sass */
 .ui-timepicker-div dl {
   text-align: left;
 }
-/* line 64, ../sass/default.sass */
+/* line 56, ../sass/default.sass */
 .ui-timepicker-div dl dt {
   float: left;
   clear: left;
   padding: 0 0 0 5px;
 }
-/* line 69, ../sass/default.sass */
+/* line 61, ../sass/default.sass */
 .ui-timepicker-div dl dd {
   margin: 0 10px 10px 45%;
 }
-/* line 73, ../sass/default.sass */
+/* line 65, ../sass/default.sass */
 .ui-timepicker-div td {
   font-size: 90%;
 }
 
-/* line 77, ../sass/default.sass */
+/* line 69, ../sass/default.sass */
 .ui-tpicker-grid-label {
   background: none;
   border: none;
@@ -98,21 +86,21 @@ input[type=datetime-local] {
   padding: 0;
 }
 
-/* line 83, ../sass/default.sass */
+/* line 75, ../sass/default.sass */
 .ui-timepicker-rtl {
   direction: rtl;
 }
-/* line 85, ../sass/default.sass */
+/* line 77, ../sass/default.sass */
 .ui-timepicker-rtl dl {
   text-align: right;
   padding: 0 5px 0 0;
 }
-/* line 88, ../sass/default.sass */
+/* line 80, ../sass/default.sass */
 .ui-timepicker-rtl dl dt {
   float: right;
   clear: right;
 }
-/* line 92, ../sass/default.sass */
+/* line 84, ../sass/default.sass */
 .ui-timepicker-rtl dl dd {
   margin: 0 45% 10px 10px;
 }
