@@ -5,10 +5,12 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], function(nsh, file, config, LogEntity, moment){
+requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'normalFilter'],
+  function(nsh, file, config, LogEntity, moment, normalFilter){
   var gui = require('nw.gui');
   var fileLines = [];
   var allLogs = [];
+  var normalFilterList = ['threadId', 'producer', 'type'];
   $(function(){
     initPreview();
     initMenu();
@@ -148,17 +150,9 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], f
       var filteredLogs = [];
       filteredLogs = filterTime(allLogs);
 
-      if ($('#threadId').val()) {
-        filteredLogs = filterThreadId(filteredLogs);
-      }
-
-      if ($('#producer').val()) {
-        filteredLogs = filterProduce(filteredLogs);
-      }
-
-      if ($('#type').val()) {
-        filteredLogs = filterType(filteredLogs);
-      }
+      normalFilterList.forEach(function(filterTarget) {
+        filteredLogs = normalFilter.doFilter(filteredLogs, filterTarger);
+      });
 
       if ($('#message').val()) {
         filteredLogs = filterMessage(filteredLogs);
