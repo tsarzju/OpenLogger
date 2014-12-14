@@ -5,10 +5,12 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'normalFilter'],
-  function(nsh, file, config, LogEntity, moment, normalFilter){
+requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
+  function(file, config, LogEntity, moment, normalFilter){
+
+  var allTypes = [];
   var gui = require('nw.gui');
-  var fileLines = [];
+  var linesWithNum = [];
   var allLogs = [];
   var normalFilterList = ['threadId', 'producer', 'type'];
   $(function(){
@@ -65,25 +67,30 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'n
       gui.Window.get().title = $(this).val();
       file.open($(this).val(), function(path, contents) {
         currentCursor = 0;
-        fileLines = contents.split('\n');
+        var fileLines = contents.split('\n');
+        linesWithNum = addLineNum(fileLines);
         processLines(fileLines);
-        var result = nextData(fileLines, currentCursor, 1000);
+
+        allTypes.forEach(function(type) {
+          $("#type").append('<option value="'+type+'">'+type+'</option>');
+        });
+
+        var result = nextData(linesWithNum, currentCursor, 1000);
         if (result) {
-          nsh.sh.defaults['auto-links'] = false;
-          $('#previewContent').html(nsh.highlight(result.contents, nsh.getLanguage('plain')));
+          $('#previewLogs').html(result.contents);
           currentCursor = result.endCursor;
 
           $('#filePath').val(path);
           $('.logDiv').show(700);
 
           var scrollFunc = function() {
-            $('#previewContent div').first().on('scroll', function(e) {
-              if ($('#previewContent div').first().scrollTop()+$('#previewContent div').first().height() > $('#previewContent div table').height() - 100) {
+            $('#previewContent').on('scroll', function(e) {
+              if ($('#previewContent').scrollTop()+$('#previewContent').height() > $('#previewLogs').height() - 100) {
                 var currentHeight = $('#previewContent div').first().scrollTop();
-                var next = nextData(fileLines, currentCursor, 1000);
+                var next = nextData(linesWithNum, currentCursor, 1000);
                 if (next) {
-                  $('#previewContent').html(nsh.highlight(next.contents, nsh.getLanguage('plain')));
-                  $('#previewContent div').first().scrollTop(currentHeight);
+                  $('#previewLogs').html(result.contents);
+                  $('#previewLogs').scrollTop(currentHeight);
                   currentCursor = next.endCursor;
                   scrollFunc();
                 }
@@ -94,6 +101,18 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'n
         }
       });
     });
+  }
+
+  function addLineNum(linesWithoutNum) {
+    var count = 1;
+    var result = [];
+    var maxLength = linesWithoutNum.length.toString().length;
+    var padding = new Array(maxLength).join(' ');
+    linesWithoutNum.forEach(function(line) {
+      result.push((padding+count).slice(-maxLength) + " | " +line);
+      count++;
+    });
+    return result;
   }
 
   function nextData(lines, currentCursor, size) {
@@ -120,6 +139,9 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'n
       if (isNewLine) {
         if (currentLog) {
           allLogs.push(currentLog);
+          if (allTypes.indexOf(currentLog.type) === -1) {
+            allTypes.push(currentLog.type);
+          }
         }
         currentLog = new LogEntity();
         var logMatch = line.match(logPattern);
@@ -151,7 +173,7 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'n
       filteredLogs = filterTime(allLogs);
 
       normalFilterList.forEach(function(filterTarget) {
-        filteredLogs = normalFilter.doFilter(filteredLogs, filterTarger);
+        filteredLogs = normalFilter.doFilter($, filteredLogs, filterTarget);
       });
 
       if ($('#message').val()) {
@@ -160,9 +182,10 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment', 'n
 
       var finalResults = [];
       filteredLogs.forEach(function(result) {
-        finalResults.push(fileLines[result.lineNumber]);
+        finalResults.push(linesWithNum[result.lineNumber]);
       });
-      $('#filterContent').html(nsh.highlight(resultLines.join('\n'), nsh.getLanguage('plain')));
+
+      $('#filterLogs').html(finalResults.join('\n'));
     });
   }
 

@@ -1,12 +1,16 @@
 define([], function() {
-  function doFilter(logToFilter, filterTarget) {
+  function doFilter($, logToFilter, filterTarget) {
     var results = [];
     var filterValue = $('#' + filterTarget).val();
-    logToFilter.forEach(function(logEntity) {
-      if (filterValue === logEntity[filterTarget]) {
-        results.push(logEntity);
-      }
-    });
+    if (filterValue) {
+      logToFilter.forEach(function(logEntity) {
+        if (filterValue === logEntity[filterTarget]) {
+          results.push(logEntity);
+        }
+      });
+    } else {
+      return logToFilter;
+    }
     return results;
   }
 
