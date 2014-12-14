@@ -7,7 +7,7 @@ requirejs.config({
 
 requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], function(nsh, file, config, LogEntity, moment){
   var gui = require('nw.gui');
-  var lines = [];
+  var fileLines = [];
   var allLogs = [];
   $(function(){
     initPreview();
@@ -63,13 +63,9 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], f
       gui.Window.get().title = $(this).val();
       file.open($(this).val(), function(path, contents) {
         currentCursor = 0;
-        lines = contents.split('\n');
-        processLines(lines);
-        for (var i=0; i<10; ++i) {
-          console.log(allLogs[i].time);
-        }
-        var result = nextData(lines, currentCursor, 1000);
-
+        fileLines = contents.split('\n');
+        processLines(fileLines);
+        var result = nextData(fileLines, currentCursor, 1000);
         if (result) {
           nsh.sh.defaults['auto-links'] = false;
           $('#previewContent').html(nsh.highlight(result.contents, nsh.getLanguage('plain')));
@@ -82,7 +78,7 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], f
             $('#previewContent div').first().on('scroll', function(e) {
               if ($('#previewContent div').first().scrollTop()+$('#previewContent div').first().height() > $('#previewContent div table').height() - 100) {
                 var currentHeight = $('#previewContent div').first().scrollTop();
-                var next = nextData(lines, currentCursor, 1000);
+                var next = nextData(fileLines, currentCursor, 1000);
                 if (next) {
                   $('#previewContent').html(nsh.highlight(next.contents, nsh.getLanguage('plain')));
                   $('#previewContent div').first().scrollTop(currentHeight);
@@ -98,26 +94,26 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], f
     });
   }
 
-  function nextData(_lines, currentCursor, size) {
+  function nextData(lines, currentCursor, size) {
     var endCursor = currentCursor + size;
-    if (endCursor >= _lines.length) {
-      endCursor = _lines.length - 1;
+    if (endCursor >= lines.length) {
+      endCursor = lines.length - 1;
     }
     if (endCursor === currentCursor) {
       return;
     } else {
       return {
         endCursor : endCursor,
-        contents : _lines.slice(0, endCursor).join('\n')
+        contents : lines.slice(0, endCursor).join('\n')
       };
     }
   }
 
-  function processLines(_lines) {
+  function processLines(lines) {
     var currentLog;
     var newLinePattern = new RegExp(/^\[([^\[\]]*)\]/);
     var logPattern = new RegExp(/\[([^\[\]]*)\]\s*(\S*)\s*(\S*)\s*(\S*)\s*(.*)/);
-    _lines.forEach(function(line, index){
+    lines.forEach(function(line, index){
       var isNewLine = line.match(newLinePattern);
       if (isNewLine) {
         if (currentLog) {
@@ -149,34 +145,54 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], f
     });
 
     $('#startFilter').on('click', function(){
-      console.log('click');
-      var startTimeStr = $('#startTime').val();
-      var endTimeStr = $('#endTime').val();
-      var startTime;
-      var endTime;
-      console.log('startTimeStr : ' + startTimeStr);
-      console.log('endTimeStr : ' + endTimeStr);
-      if (startTimeStr) {
-        startTime = moment(startTimeStr, config.fullFormat);
+      var filteredLogs = [];
+      filteredLogs = filterTime(allLogs);
+
+      if ($('#threadId').val()) {
+        filteredLogs = filterThreadId(filteredLogs);
       }
-      if (endTimeStr) {
-        endTime = moment(endTimeStr, config.fullFormat);
+
+      if ($('#producer').val()) {
+        filteredLogs = filterProduce(filteredLogs);
       }
-      var results = [];
-      console.log('allLogs : ' + allLogs.length);
-      allLogs.forEach(function(logEntity) {
-        var logTime = moment(logEntity.time.substring(0, logEntity.time.length + config.adjustSize-1), config.fullFormat);
-        if (betweenTime(logTime, startTime, endTime)) {
-          results.push(logEntity);
-        }
-      });
-      console.log('results : ' + results.length);
-      var resultLines = [];
-      results.forEach(function(result) {
-        resultLines.push(lines[result.lineNumber]);
+
+      if ($('#type').val()) {
+        filteredLogs = filterType(filteredLogs);
+      }
+
+      if ($('#message').val()) {
+        filteredLogs = filterMessage(filteredLogs);
+      }
+
+      var finalResults = [];
+      filteredLogs.forEach(function(result) {
+        finalResults.push(fileLines[result.lineNumber]);
       });
       $('#filterContent').html(nsh.highlight(resultLines.join('\n'), nsh.getLanguage('plain')));
     });
+  }
+
+  function filterTime(logToFilter) {
+    var startTimeStr = $('#startTime').val();
+    var endTimeStr = $('#endTime').val();
+    var startTime;
+    var endTime;
+    if (startTimeStr) {
+      startTime = moment(startTimeStr, config.fullFormat);
+    }
+    if (endTimeStr) {
+      endTime = moment(endTimeStr, config.fullFormat);
+    }
+    var results = [];
+    logToFilter.forEach(function(logEntity) {
+      var logTime = moment(logEntity.time.substring(0, logEntity.time.length + config.adjustSize-1), config.fullFormat);
+      if (betweenTime(logTime, startTime, endTime)) {
+        results.push(logEntity);
+      }
+    });
+
+
+    return results;
   }
 
   function betweenTime(target, start, end) {
@@ -190,4 +206,49 @@ requirejs(['node-syntaxhighlighter', 'file', 'config', 'LogEntity', 'moment'], f
       return true;
     }
   }
+
+  function filterThreadId(logToFilter) {
+    var results = [];
+    var threadId = $('#threadId').val();
+    logToFilter.forEach(function(logEntity) {
+      if (threadId === logEntity.threadId) {
+        results.push(logEntity);
+      }
+    });
+    return results;
+  }
+
+  function filterProduce(logToFilter) {
+    var results = [];
+    var producer = $('#producer').val();
+    logToFilter.forEach(function(logEntity) {
+      if (producer === logEntity.producer) {
+        results.push(logEntity);
+      }
+    });
+    return results;
+  }
+
+  function filterType(logToFilter) {
+    var results = [];
+    var type = $('#type').val();
+    logToFilter.forEach(function(logEntity) {
+      if (type === logEntity.type) {
+        results.push(logEntity);
+      }
+    });
+    return results;
+  }
+
+  function filterMessage(logToFilter) {
+    var results = [];
+    var message = $('#message').val();
+    logToFilter.forEach(function(logEntity) {
+      if (logEntity.message.toLowerCase().indexof(message.toLowerCase()) > -1) {
+        results.push(logEntity);
+      }
+    });
+    return results;
+  }
+
 });
