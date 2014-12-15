@@ -4,7 +4,7 @@ define([], function() {
     var filterValue = $('#' + filterTarget).val();
     if (filterValue) {
       logToFilter.forEach(function(logEntity) {
-        if (filterValue === logEntity[filterTarget]) {
+        if (logEntity[filterTarget].toString().toLowerCase().indexOf(filterValue) > -1) {
           results.push(logEntity);
         }
       });
