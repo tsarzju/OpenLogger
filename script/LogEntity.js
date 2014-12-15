@@ -1,7 +1,5 @@
 define(['config', 'moment'], function(config, moment) {
   function LogEntity() {
-    this.startLine = 0;
-    this.endLine = 0;
     this.time = 0;
     this.formatTime = 0;
     this.threadId = '';
@@ -11,9 +9,7 @@ define(['config', 'moment'], function(config, moment) {
     this.originLog = '';
   }
 
-  function update(startLine, time, threadId, producer, type, message) {
-    this.startLine = startLine;
-    this.endLine = startLine + 1;
+  function update(time, threadId, producer, type, message) {
     this.time = time;
     this.threadId = threadId;
     this.producer = producer;
@@ -42,9 +38,7 @@ define(['config', 'moment'], function(config, moment) {
     getFormatTime : getFormatTime,
 
     toString : function() {
-      return 'startLine' + this.startLine +
-        '\nendLine' + this.endLine +
-        '\ntime : ' + this.time +
+      return 'time : ' + this.time +
         '\nthreadId : ' + this.threadId +
         '\nproducer : ' + this.producer +
         '\ntype : ' + this.type +

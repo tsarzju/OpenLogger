@@ -5,12 +5,10 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
-  function(file, config, LogEntity, moment, normalFilter){
+requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'normalFilter'],
+  function(fs, iconv, Lazy, file, config, LogEntity, moment, normalFilter){
   var allTypes = [];
   var gui = require('nw.gui');
-  var linesWithNum = [];
-  var allLogs = [];
   var normalFilterList = ['threadId', 'producer', 'type'];
   $(function(){
     initPreview();
@@ -73,75 +71,36 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     $('#filterLogs').text('');
   }
 
-  function update(path) {
+  function updatePreview(path, numLines) {
     gui.Window.get().title = path;
-    $("#type").append('<option value=""></option>');
-    allTypes.forEach(function(type) {
-      $("#type").append('<option value="'+type+'">'+type+'</option>');
-    });
-    $('#previewLogs').text(linesWithNum.slice(0, config.previewSize).join('\n'));
+    $('#previewLogs').text(numLines.join('\n'));
     $('.logDiv').show();
   }
 
   function initPreview() {
     $('#import').on('change', function(e) {
-      file.open($(this).val(), function(path, contents) {
+      var path = $(this).val();
+      getPreview(path, config.previewSize, function(err, fileData){
         clear();
-        var time = new Date().getTime();
-        var fileLines = contents.split('\n');
-        console.log('split time : ' + (new Date().getTime() - time));
-        time = new Date().getTime();
-        linesWithNum = addLineNum(fileLines);
-        console.log('add line : ' + (new Date().getTime() - time));
-        time = new Date().getTime();
-        processLines(fileLines);
-        console.log('process lines : ' + (new Date().getTime() - time));
-        time = new Date().getTime();
-        update(path);
-        console.log('update view : ' + (new Date().getTime() - time));
+        var numLines = addLineNum(1, fileData.split('\n'));
+        updatePreview(path, numLines);
       });
     });
   }
 
-  function addLineNum(linesWithoutNum) {
-    var count = 1;
+  function addLineNum(startIndex, linesWithoutNum) {
+    var count = startIndex;
     var result = [];
-    var maxLength = linesWithoutNum.length.toString().length;
+    var maxLength = 5;
+    if (startIndex.toString().length > 5) {
+      maxLength = startIndex.toString().length;
+    }
     var padding = new Array(maxLength).join(' ');
     linesWithoutNum.forEach(function(line) {
       result.push((padding+count).slice(-maxLength) + " | " +line.replace(/\t/g, '    '));
       count++;
     });
     return result;
-  }
-
-  function processLines(lines) {
-    var currentLog;
-    var newLinePattern = new RegExp(/^\[([^\[\]]*)\]/);
-    var logPattern = new RegExp(/\[([^\[\]]*)\]\s*(\S*)\s*(\S*)\s*(\S*)\s*(.*)/);
-    lines.forEach(function(line, index){
-      var isNewLine = line.match(newLinePattern);
-      if (isNewLine) {
-        if (currentLog) {
-          currentLog.endLine = index;
-          currentLog.originLog = linesWithNum.slice(currentLog.startLine, currentLog.endLine).join('\n');
-          allLogs.push(currentLog);
-          if (allTypes.indexOf(currentLog.type) === -1) {
-            allTypes.push(currentLog.type);
-          }
-        }
-        currentLog = new LogEntity();
-        var logMatch = line.match(logPattern);
-        currentLog.update(index, logMatch[1].substring(0, logMatch[1].length + config.adjustSize-1) , logMatch[2], logMatch[3],
-          logMatch[4], logMatch[5]);
-      } else {
-        if (currentLog === undefined) {
-          return;
-        } else {
-          currentLog.appendMessage(line);
-        }
-      }
-    });
   }
 
   function initFilter() {
@@ -156,42 +115,77 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     });
 
     $('#startFilter').on('click', function(){
-      $('#filterLogs').scrollTop(0);
-      $('#filterLogs').text('');
-      var filteredLogs = [];
+      var path = gui.Window.get().title;
+      var fileLines = [];
+      var linesWithNum = [];
 
-      var time = new Date().getTime();
+      var allLogs = [];
+      var resultLogs = [];
+      var currentLog;
+      var lineCount = 1;
+      var logCount = 0;
 
-      filteredLogs = filterTime(allLogs);
+      var newLinePattern = new RegExp(/^\[([^\[\]]*)\]/);
+      var logPattern = new RegExp(/\[([^\[\]]*)\]\s*(\S*)\s*(\S*)\s*(\S*)\s*(.*)/);
 
-      console.log('filter time : ' + (new Date().getTime() - time));
-      time = new Date().getTime();
+      var filterData = function(){
+        console.log('allLogs : ' + allLogs.length);
+        var filteredLogs = filterTime(allLogs);
 
-      normalFilterList.forEach(function(filterTarget) {
-        filteredLogs = normalFilter.doFilter($, filteredLogs, filterTarget);
-      });
+        normalFilterList.forEach(function(filterTarget) {
+          filteredLogs = normalFilter.doFilter($, filteredLogs, filterTarget);
+        });
 
-      console.log('filter normal : ' + (new Date().getTime() - time));
-      time = new Date().getTime();
+        if ($('#message').val()) {
+          filteredLogs = filterMessage(filteredLogs);
+        }
 
-      if ($('#message').val()) {
-        filteredLogs = filterMessage(filteredLogs);
-      }
+        filteredLogs.forEach(function(result) {
+          resultLogs.push(result.originLog);
+        });
 
-      console.log('filter message : ' + (new Date().getTime() - time));
-      time = new Date().getTime();
+        fileLines.length = 0;
+        linesWithNum.length = 0;
+        allLogs.length = 0;
+        currentLog = undefined;
 
-      var finalResults = [];
-      filteredLogs.forEach(function(result) {
-        finalResults.push(result.originLog);
-      });
+        $('#filterLogs').text(resultLogs.join('\n'));
+      };
 
-      console.log('concat time : ' + (new Date().getTime() - time));
-      time = new Date().getTime();
-
-      $('#filterLogs').text(finalResults.join('\n'));
-
-      console.log('render time : ' + (new Date().getTime() - time));
+      new Lazy(fs.createReadStream(path).pipe(iconv.decodeStream(config.encoding)))
+        .on('end', function() {
+          console.log('end!!!!!');
+          filterData();
+        })
+        .lines
+        .map(String)
+        .forEach(function(line) {
+          fileLines.push(line);
+          var isNewLine = line.match(newLinePattern);
+          if (isNewLine) {
+            if (currentLog) {
+              linesWithNum = addLineNum(lineCount, fileLines);
+              lineCount = lineCount + fileLines.length;
+              currentLog.originLog = linesWithNum.join('\n');
+              allLogs.push(currentLog);
+              fileLines.length = 0;
+            }
+            currentLog = new LogEntity();
+            logCount++;
+            var logMatch = line.match(logPattern);
+            currentLog.update(logMatch[1].substring(0, logMatch[1].length + config.adjustSize-1) , logMatch[2], logMatch[3],
+            logMatch[4], logMatch[5]);
+          } else {
+            if (currentLog === undefined) {
+              return;
+            } else {
+              currentLog.appendMessage(line);
+            }
+          }
+          if (logCount % config.blockSize === 0) {
+            filterData();
+          }
+        });
     });
   }
 
@@ -279,10 +273,39 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
       }
     }
 
-    if (logToFilter[currentIndex].getFormatTime() > searchElement) {
-      return currentIndex;
-    } else {
-      return currentIndex + 1;
-    }
+    return currentIndex;
   }
+
+  function getPreview(filename, size, callback) {
+    var stream = fs.createReadStream(filename, {
+      flags: 'r',
+      fd: null,
+      mode: 0666,
+      bufferSize: 64 * 1024
+    });
+
+    var fileData = '';
+    stream.on('data', function(contents){
+      var data = iconv.decode(contents, config.encoding);
+      fileData += data;
+
+      // The next lines should be improved
+      var lines = fileData.split("\n");
+
+      if(lines.length >= size){
+        stream.destroy();
+        callback(null, fileData);
+      }
+    });
+
+    stream.on('error', function(){
+      callback('Error', null);
+    });
+
+    stream.on('end', function(){
+      callback(null, fileData);
+    });
+
+  }
+
 });
