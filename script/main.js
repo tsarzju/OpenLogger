@@ -7,7 +7,6 @@ requirejs.config({
 
 requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
   function(file, config, LogEntity, moment, normalFilter){
-
   var allTypes = [];
   var gui = require('nw.gui');
   var linesWithNum = [];
@@ -61,44 +60,45 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     gui.Window.get().menu = menu;
   }
 
+  function clear() {
+    allLogs = [];
+    allTypes = [];
+    linesWithNum = [];
+    currentCursor = 0;
+
+    $("#type").empty();
+    $('#previewLogs').scrollTop(0);
+    $('#previewLogs').text('');
+    $('#filterLogs').scrollTop(0);
+    $('#filterLogs').text('');
+  }
+
+  function update(path) {
+    gui.Window.get().title = path;
+    $("#type").append('<option value=""></option>');
+    allTypes.forEach(function(type) {
+      $("#type").append('<option value="'+type+'">'+type+'</option>');
+    });
+    $('#previewLogs').text(linesWithNum.slice(0, config.previewSize).join('\n'));
+    $('.logDiv').show();
+  }
+
   function initPreview() {
-    var currentCursor = 0;
     $('#import').on('change', function(e) {
-      gui.Window.get().title = $(this).val();
       file.open($(this).val(), function(path, contents) {
-        currentCursor = 0;
+        clear();
+        var time = new Date().getTime();
         var fileLines = contents.split('\n');
+        console.log('split time : ' + (new Date().getTime() - time));
+        time = new Date().getTime();
         linesWithNum = addLineNum(fileLines);
+        console.log('add line : ' + (new Date().getTime() - time));
+        time = new Date().getTime();
         processLines(fileLines);
-
-        allTypes.forEach(function(type) {
-          $("#type").append('<option value="'+type+'">'+type+'</option>');
-        });
-
-        var result = nextData(linesWithNum, currentCursor, 1000);
-        if (result) {
-          $('#previewLogs').html(result.contents);
-          currentCursor = result.endCursor;
-
-          $('#filePath').val(path);
-          $('.logDiv').show(700);
-
-          var scrollFunc = function() {
-            $('#previewContent').on('scroll', function(e) {
-              if ($('#previewContent').scrollTop()+$('#previewContent').height() > $('#previewLogs').height() - 100) {
-                var currentHeight = $('#previewContent div').first().scrollTop();
-                var next = nextData(linesWithNum, currentCursor, 1000);
-                if (next) {
-                  $('#previewLogs').html(result.contents);
-                  $('#previewLogs').scrollTop(currentHeight);
-                  currentCursor = next.endCursor;
-                  scrollFunc();
-                }
-              }
-            });
-          };
-          scrollFunc();
-        }
+        console.log('process lines : ' + (new Date().getTime() - time));
+        time = new Date().getTime();
+        update(path);
+        console.log('update view : ' + (new Date().getTime() - time));
       });
     });
   }
@@ -109,25 +109,10 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     var maxLength = linesWithoutNum.length.toString().length;
     var padding = new Array(maxLength).join(' ');
     linesWithoutNum.forEach(function(line) {
-      result.push((padding+count).slice(-maxLength) + " | " +line);
+      result.push((padding+count).slice(-maxLength) + " | " +line.replace(/\t/g, '    '));
       count++;
     });
     return result;
-  }
-
-  function nextData(lines, currentCursor, size) {
-    var endCursor = currentCursor + size;
-    if (endCursor >= lines.length) {
-      endCursor = lines.length - 1;
-    }
-    if (endCursor === currentCursor) {
-      return;
-    } else {
-      return {
-        endCursor : endCursor,
-        contents : lines.slice(0, endCursor).join('\n')
-      };
-    }
   }
 
   function processLines(lines) {
@@ -138,6 +123,8 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
       var isNewLine = line.match(newLinePattern);
       if (isNewLine) {
         if (currentLog) {
+          currentLog.endLine = index;
+          currentLog.originLog = linesWithNum.slice(currentLog.startLine, currentLog.endLine).join('\n');
           allLogs.push(currentLog);
           if (allTypes.indexOf(currentLog.type) === -1) {
             allTypes.push(currentLog.type);
@@ -145,7 +132,7 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
         }
         currentLog = new LogEntity();
         var logMatch = line.match(logPattern);
-        currentLog.update(index, logMatch[1], logMatch[2], logMatch[3],
+        currentLog.update(index, logMatch[1].substring(0, logMatch[1].length + config.adjustSize-1) , logMatch[2], logMatch[3],
           logMatch[4], logMatch[5]);
       } else {
         if (currentLog === undefined) {
@@ -169,23 +156,42 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     });
 
     $('#startFilter').on('click', function(){
+      $('#filterLogs').scrollTop(0);
+      $('#filterLogs').text('');
       var filteredLogs = [];
+
+      var time = new Date().getTime();
+
       filteredLogs = filterTime(allLogs);
+
+      console.log('filter time : ' + (new Date().getTime() - time));
+      time = new Date().getTime();
 
       normalFilterList.forEach(function(filterTarget) {
         filteredLogs = normalFilter.doFilter($, filteredLogs, filterTarget);
       });
 
+      console.log('filter normal : ' + (new Date().getTime() - time));
+      time = new Date().getTime();
+
       if ($('#message').val()) {
         filteredLogs = filterMessage(filteredLogs);
       }
 
+      console.log('filter message : ' + (new Date().getTime() - time));
+      time = new Date().getTime();
+
       var finalResults = [];
       filteredLogs.forEach(function(result) {
-        finalResults.push(linesWithNum[result.lineNumber]);
+        finalResults.push(result.originLog);
       });
 
-      $('#filterLogs').html(finalResults.join('\n'));
+      console.log('concat time : ' + (new Date().getTime() - time));
+      time = new Date().getTime();
+
+      $('#filterLogs').text(finalResults.join('\n'));
+
+      console.log('render time : ' + (new Date().getTime() - time));
     });
   }
 
@@ -194,34 +200,18 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     var endTimeStr = $('#endTime').val();
     var startTime;
     var endTime;
+    var startIndex = 0;
+    var endIndex = logToFilter.length;
     if (startTimeStr) {
-      startTime = moment(startTimeStr, config.fullFormat);
+      startTime = moment(startTimeStr, config.fullFormat).format('x');
+      startIndex = binaryIndexOf(logToFilter, startTime);
     }
     if (endTimeStr) {
-      endTime = moment(endTimeStr, config.fullFormat);
+      endTime = moment(endTimeStr, config.fullFormat).format('x');
+      endIndex = binaryIndexOf(logToFilter, endTime);
     }
-    var results = [];
-    logToFilter.forEach(function(logEntity) {
-      var logTime = moment(logEntity.time.substring(0, logEntity.time.length + config.adjustSize-1), config.fullFormat);
-      if (betweenTime(logTime, startTime, endTime)) {
-        results.push(logEntity);
-      }
-    });
-
-
+    var results = logToFilter.slice(startIndex, endIndex);
     return results;
-  }
-
-  function betweenTime(target, start, end) {
-    if (start && end) {
-      return ((target.isAfter(start) || target.isSame(start)) && (target.isBefore(end) || target.isSame(end)));
-    } else if (start) {
-      return (target.isAfter(start) || target.isSame(start));
-    } else if (end) {
-      return (target.isBefore(end) || target.isSame(end));
-    } else {
-      return true;
-    }
   }
 
   function filterThreadId(logToFilter) {
@@ -268,4 +258,31 @@ requirejs(['file', 'config', 'LogEntity', 'moment', 'normalFilter'],
     return results;
   }
 
+  function binaryIndexOf(logToFilter, searchElement) {
+    var minIndex = 0;
+    var maxIndex = logToFilter.length - 1;
+    var currentIndex;
+    var currentElement;
+
+    while (minIndex <= maxIndex) {
+      currentIndex = (minIndex + maxIndex) / 2 | 0;
+      currentElement = logToFilter[currentIndex].getFormatTime();
+
+      if (currentElement < searchElement) {
+        minIndex = currentIndex + 1;
+      }
+      else if (currentElement > searchElement) {
+        maxIndex = currentIndex - 1;
+      }
+      else {
+        return currentIndex;
+      }
+    }
+
+    if (logToFilter[currentIndex].getFormatTime() > searchElement) {
+      return currentIndex;
+    } else {
+      return currentIndex + 1;
+    }
+  }
 });

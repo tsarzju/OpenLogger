@@ -5,8 +5,6 @@
   </title>
   <link rel="stylesheet" href="../css/default.css" />
   <link rel="stylesheet" href="../css/jquery-ui.css" />
-  <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shCore.css" />
-  <link rel="stylesheet" href="../node_modules/node-syntaxhighlighter/lib/styles/shThemeRDark.css" / >
   <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css" />
   <script src="../js/jquery-2.1.1.js"></script>
   <script src="../js/jquery-ui.js"></script>
@@ -25,12 +23,12 @@
     <div id="filterControl" class="logDiv">
       <span class="title">Filter</span>
       <button type="button" id="startFilter" class="btn btn-default btn-xs">Start</button>
-      <span>Time From</span><input id="startTime"></input>
-      <span>To</span><input id="endTime"></input>
-      <span>Thread ID</span><input id="threadId" type="text"></input>
-      <span>Producer</span><input id="producer" type="text"></input>
-      <span>Type</span><select id="type"></select>
-      <span>Message</span><input id="message" type="text"><input>
+      <span>Time : </span><input id="startTime"></input>
+      <span> - </span><input id="endTime"></input>
+      <span>Thread ID : </span><input id="threadId" class="normal" type="text"></input>
+      <span>Producer : </span><input id="producer" class="normal" type="text"></input>
+      <span>Type : </span><select id="type" class="normal"></select>
+      <span>Message : </span><input id="message" class="message" type="text"></input>
     </div>
     <div id="filterContent" class="logDiv">
       <pre id="filterLogs"></pre>
