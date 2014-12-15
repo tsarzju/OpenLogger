@@ -9,7 +9,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   function(fs, iconv, Lazy, file, config, LogEntity, moment, normalFilter){
   var gui = require('nw.gui');
   var currentStyle;
-
+  var originStyle;
   $(function(){
     initStyle();
     initPreview();
@@ -24,7 +24,9 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
       $('#styleSelect').append(('<option value="'+index+'">'+style.name+'</option>'));
     });
     currentStyle = styles[0];
+    originStyle = styles[0];
     $('#styleSelect').on('change', function(){
+      originStyle = currentStyle;
       currentStyle = styles[$('#styleSelect').val()];
     });
   }
@@ -105,8 +107,8 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         });
 
       } else if (filter.type === 'normal' || filter.type === 'message') {
-        $('#filterContrl').append('<span class="dynamic">'+ filter.name +' : </span>' +
-          '<input id="'+ filter.id +'" class="'+ fitler.type +' dynamic" type="text"></input>');
+        $('#filterControl').append('<span class="dynamic">'+ filter.name +' : </span>' +
+          '<input id="'+ filter.id +'" class="'+ filter.type +' dynamic" type="text"></input>');
       }
     });
   }
@@ -118,21 +120,17 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         clear();
         updatePreview(path, addLineNum(1, fileData.split('\n')));
         updateFilterView(currentStyle);
-        initLogEntity(currentStyle);
+        initLogEntity(originStyle, currentStyle);
       });
     });
   }
 
-  function initLogEntity(style) {
-    LogEntity.prototype.forEach(function(value, key) {
-      if (key === 'constructor' || key === 'getFormatTime') {
-        return;
-      } else {
-        delete LogEntity.prototype[key];
-      }
+  function initLogEntity(origin, current) {
+    origin.filters.forEach(function(filter) {
+      delete LogEntity.prototype[filter.id];
     });
 
-    style.filters.forEach(function(filter) {
+    current.filters.forEach(function(filter) {
       LogEntity.prototype[filter.id] = '';
     });
   }
@@ -153,7 +151,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   }
 
   function getStarterPattern() {
-    return new RegEx(style.starter);
+    return new RegExp(currentStyle.starter);
   }
 
   function getLogPattern() {
@@ -162,7 +160,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
       regexs.push(filter.regex);
     });
 
-    return new RegEx(regexs.join(currentStyle.separator));
+    return new RegExp(regexs.join(currentStyle.separator));
   }
 
   function initFilter() {
