@@ -7,7 +7,6 @@ requirejs.config({
 
 requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'normalFilter'],
   function(fs, iconv, Lazy, file, config, LogEntity, moment, normalFilter){
-  var allTypes = [];
   var gui = require('nw.gui');
   var normalFilterList = ['threadId', 'producer', 'type'];
   $(function(){
@@ -59,11 +58,6 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   }
 
   function clear() {
-    allLogs = [];
-    allTypes = [];
-    linesWithNum = [];
-    currentCursor = 0;
-
     $("#type").empty();
     $('#previewLogs').scrollTop(0);
     $('#previewLogs').text('');
@@ -82,8 +76,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
       var path = $(this).val();
       getPreview(path, config.previewSize, function(err, fileData){
         clear();
-        var numLines = addLineNum(1, fileData.split('\n'));
-        updatePreview(path, numLines);
+        updatePreview(path, addLineNum(1, fileData.split('\n')));
       });
     });
   }
@@ -117,20 +110,20 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
     $('#startFilter').on('click', function(){
       var path = gui.Window.get().title;
       var fileLines = [];
-      var linesWithNum = [];
 
       var allLogs = [];
-      var resultLogs = [];
       var currentLog;
+
       var lineCount = 1;
       var logCount = 0;
 
       var newLinePattern = new RegExp(/^\[([^\[\]]*)\]/);
       var logPattern = new RegExp(/\[([^\[\]]*)\]\s*(\S*)\s*(\S*)\s*(\S*)\s*(.*)/);
 
-      var filterData = function(){
-        console.log('allLogs : ' + allLogs.length);
-        var filteredLogs = filterTime(allLogs);
+      var filterData = function(LogsToFilter){
+        var resultLogs = [];
+
+        filteredLogs = filterTime(LogsToFilter);
 
         normalFilterList.forEach(function(filterTarget) {
           filteredLogs = normalFilter.doFilter($, filteredLogs, filterTarget);
@@ -144,19 +137,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
           resultLogs.push(result.originLog);
         });
 
-        fileLines.length = 0;
-        linesWithNum.length = 0;
-        allLogs.length = 0;
-        currentLog = undefined;
-
-        $('#filterLogs').text(resultLogs.join('\n'));
+        $('#filterLogs').append(resultLogs.join('\n'));
       };
 
       new Lazy(fs.createReadStream(path).pipe(iconv.decodeStream(config.encoding)))
-        .on('end', function() {
-          console.log('end!!!!!');
-          filterData();
-        })
         .lines
         .map(String)
         .forEach(function(line) {
@@ -164,7 +148,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
           var isNewLine = line.match(newLinePattern);
           if (isNewLine) {
             if (currentLog) {
-              linesWithNum = addLineNum(lineCount, fileLines);
+              var linesWithNum = addLineNum(lineCount, fileLines);
               lineCount = lineCount + fileLines.length;
               currentLog.originLog = linesWithNum.join('\n');
               allLogs.push(currentLog);
@@ -183,8 +167,16 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
             }
           }
           if (logCount % config.blockSize === 0) {
-            filterData();
+            filterData(allLogs);
+            allLogs.length = 0;
           }
+        })
+        .on('end', function() {
+          var linesWithNum = addLineNum(lineCount, fileLines);
+          lineCount = lineCount + fileLines.length;
+          currentLog.originLog = linesWithNum.join('\n');
+          allLogs.push(currentLog);
+          filterData(allLogs);
         });
     });
   }
@@ -205,39 +197,6 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
       endIndex = binaryIndexOf(logToFilter, endTime);
     }
     var results = logToFilter.slice(startIndex, endIndex);
-    return results;
-  }
-
-  function filterThreadId(logToFilter) {
-    var results = [];
-    var threadId = $('#threadId').val();
-    logToFilter.forEach(function(logEntity) {
-      if (threadId === logEntity.threadId) {
-        results.push(logEntity);
-      }
-    });
-    return results;
-  }
-
-  function filterProduce(logToFilter) {
-    var results = [];
-    var producer = $('#producer').val();
-    logToFilter.forEach(function(logEntity) {
-      if (producer === logEntity.producer) {
-        results.push(logEntity);
-      }
-    });
-    return results;
-  }
-
-  function filterType(logToFilter) {
-    var results = [];
-    var type = $('#type').val();
-    logToFilter.forEach(function(logEntity) {
-      if (type === logEntity.type) {
-        results.push(logEntity);
-      }
-    });
     return results;
   }
 
