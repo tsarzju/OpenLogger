@@ -61,39 +61,46 @@ span.title {
 }
 
 /* line 50, ../sass/default.sass */
+span.info {
+  color: red;
+  font-size: 1em;
+  margin: 5px 10px 5px;
+}
+
+/* line 55, ../sass/default.sass */
 .logDiv {
   display: none;
 }
 
-/* line 53, ../sass/default.sass */
+/* line 58, ../sass/default.sass */
 input[type=datetime-local] {
   margin: 5px 10px 5px;
 }
 
-/* line 57, ../sass/default.sass */
+/* line 62, ../sass/default.sass */
 .ui-timepicker-div .ui-widget-header {
   margin-bottom: 8px;
 }
-/* line 60, ../sass/default.sass */
+/* line 65, ../sass/default.sass */
 .ui-timepicker-div dl {
   text-align: left;
 }
-/* line 62, ../sass/default.sass */
+/* line 67, ../sass/default.sass */
 .ui-timepicker-div dl dt {
   float: left;
   clear: left;
   padding: 0 0 0 5px;
 }
-/* line 67, ../sass/default.sass */
+/* line 72, ../sass/default.sass */
 .ui-timepicker-div dl dd {
   margin: 0 10px 10px 45%;
 }
-/* line 71, ../sass/default.sass */
+/* line 76, ../sass/default.sass */
 .ui-timepicker-div td {
   font-size: 90%;
 }
 
-/* line 75, ../sass/default.sass */
+/* line 80, ../sass/default.sass */
 .ui-tpicker-grid-label {
   background: none;
   border: none;
@@ -101,21 +108,21 @@ input[type=datetime-local] {
   padding: 0;
 }
 
-/* line 81, ../sass/default.sass */
+/* line 86, ../sass/default.sass */
 .ui-timepicker-rtl {
   direction: rtl;
 }
-/* line 83, ../sass/default.sass */
+/* line 88, ../sass/default.sass */
 .ui-timepicker-rtl dl {
   text-align: right;
   padding: 0 5px 0 0;
 }
-/* line 86, ../sass/default.sass */
+/* line 91, ../sass/default.sass */
 .ui-timepicker-rtl dl dt {
   float: right;
   clear: right;
 }
-/* line 90, ../sass/default.sass */
+/* line 95, ../sass/default.sass */
 .ui-timepicker-rtl dl dd {
   margin: 0 45% 10px 10px;
 }

@@ -22,12 +22,14 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
     var index = 0;
     styles.forEach(function(style) {
       $('#styleSelect').append(('<option value="'+index+'">'+style.name+'</option>'));
+      index++;
     });
     currentStyle = styles[0];
     originStyle = styles[0];
     $('#styleSelect').on('change', function(){
       originStyle = currentStyle;
       currentStyle = styles[$('#styleSelect').val()];
+      updateFilterView(currentStyle);
     });
   }
 
@@ -165,6 +167,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
 
   function initFilter() {
     $('#startFilter').on('click', function(){
+      $('#filterLogs').text('');
+      $('#status').text('processing');
+      $('#resultCount').text('');
+
       var path = gui.Window.get().title;
       var fileLines = [];
 
@@ -176,47 +182,58 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
 
       var newLinePattern = getStarterPattern();
       var logPattern = getLogPattern();
+      var resultCount = 0;
 
-      var filterData = function(logsToFilter){
+      var filterData = function(logsToFilter, isLast){
         var resultLogs = [];
-
         currentStyle.filters.forEach(function(filter) {
-          if (filter.type === time) {
+          if (filter.type === 'time') {
             logsToFilter = filterTime(logsToFilter);
           } else if (filter.type === 'normal' || filter.type === 'message') {
             logsToFilter = normalFilter.doFilter($, logsToFilter, filter.id);
           }
         });
-
         logsToFilter.forEach(function(result) {
           resultLogs.push(result.originLog);
         });
 
         $('#filterLogs').append(resultLogs.join('\n'));
+        resultCount += resultLogs.length;
+        $('#resultCount').text(resultCount);
+        if (isLast === true) {
+          $('#status').text('finished');
+        }
       };
-
+//
       new Lazy(fs.createReadStream(path).pipe(iconv.decodeStream(currentStyle.encoding)))
         .lines
         .map(String)
         .forEach(function(line) {
-          fileLines.push(line);
           var isNewLine = line.match(newLinePattern);
           if (isNewLine) {
             if (currentLog) {
               var linesWithNum = addLineNum(lineCount, fileLines);
               lineCount = lineCount + fileLines.length;
+              $('#lineCount').text(lineCount);
               currentLog.originLog = linesWithNum.join('\n');
               allLogs.push(currentLog);
               fileLines.length = 0;
             }
             currentLog = new LogEntity();
+            fileLines.push(line);
             logCount++;
-            var logMatch = line.match(logPattern);
+            $('#logCount').text(logCount);
+            if (logCount % config.blockSize === 0) {
+              filterData(allLogs, false);
+              allLogs.length = 0;
+              $('#logCount').text(logCount);
+            }
 
+            var logMatch = line.match(logPattern);
             var index = 1;
             currentStyle.filters.forEach(function(filter) {
               var value = '';
-              if (filter.name === 'time') {
+              if (filter.type === 'time') {
                 value = logMatch[index].substring(0, logMatch[index].length + currentStyle.adjustSize-1);
               } else {
                 value = logMatch[index];
@@ -226,68 +243,60 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
             });
           } else {
             if (currentLog === undefined) {
+              lineCount++;
+              $('#lineCount').text(lineCount);
               return;
             } else {
               var key = currentStyle.filters[currentStyle.filters.length-1];
               currentLog[key] = currentLog[key] + line;
+              fileLines.push(line);
             }
           }
-          if (logCount % config.blockSize === 0) {
-            filterData(allLogs);
-            allLogs.length = 0;
-          }
         })
-        .on('end', function() {
+        .on('pipe', function() {
           var linesWithNum = addLineNum(lineCount, fileLines);
           lineCount = lineCount + fileLines.length;
           currentLog.originLog = linesWithNum.join('\n');
           allLogs.push(currentLog);
-          filterData(allLogs);
+          filterData(allLogs, true);
         });
     });
   }
 
-  function filterTime(logToFilter) {
+  function getFullFormat(style) {
+    return style.dateFormat + ' ' + style.timeFormat + style.lastFormat;
+  }
+
+  function filterTime(logsToFilter) {
     var startTimeStr = $('#startTime').val();
     var endTimeStr = $('#endTime').val();
     var startTime;
     var endTime;
     var startIndex = 0;
-    var endIndex = logToFilter.length;
+    var endIndex = logsToFilter.length;
+    var fullFormat = getFullFormat(currentStyle);
     if (startTimeStr) {
-      startTime = moment(startTimeStr, currentStyle.fullFormat).format('x');
-      startIndex = binaryIndexOf(logToFilter, startTime);
+      startTime = moment(startTimeStr, fullFormat).format('x');
+      startIndex = binaryIndexOf(logsToFilter, startTime);
     }
     if (endTimeStr) {
-      endTime = moment(endTimeStr, currentStyle.fullFormat).format('x');
-      endIndex = binaryIndexOf(logToFilter, endTime);
+      endTime = moment(endTimeStr, fullFormat).format('x');
+      endIndex = binaryIndexOf(logsToFilter, endTime);
     }
-    var results = logToFilter.slice(startIndex, endIndex);
+    var results = logsToFilter.slice(startIndex, endIndex);
     return results;
   }
 
-  function filterMessage(logToFilter) {
-    var results = [];
-    var message = $('#message').val();
-    logToFilter.forEach(function(logEntity) {
-      if (logEntity.message.toLowerCase().indexof(message.toLowerCase()) > -1) {
-        results.push(logEntity);
-      }
-    });
-    return results;
-  }
-
-  function binaryIndexOf(logToFilter, searchElement) {
+  function binaryIndexOf(logsToFilter, searchElement) {
     var minIndex = 0;
-    var maxIndex = logToFilter.length - 1;
+    var maxIndex = logsToFilter.length - 1;
     var currentIndex;
     var currentElement;
 
-    var fullFormat = currentStyle.dateFormat + ' ' + currentStyle.timeFormat + currentStyle.lastFormat;
-
+    var fullFormat = getFullFormat(currentStyle);
     while (minIndex <= maxIndex) {
       currentIndex = (minIndex + maxIndex) / 2 | 0;
-      currentElement = logToFilter[currentIndex].getFormatTime(currentStyle);
+      currentElement = logsToFilter[currentIndex].getFormatTime(fullFormat);
 
       if (currentElement < searchElement) {
         minIndex = currentIndex + 1;
@@ -316,7 +325,6 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
       var data = iconv.decode(contents, currentStyle.encoding);
       fileData += data;
 
-      // The next lines should be improved
       var lines = fileData.split("\n");
 
       if(lines.length >= size){

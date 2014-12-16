@@ -1,15 +1,15 @@
 define([], function() {
-  function doFilter($, logToFilter, filterTarget) {
+  function doFilter($, logsToFilter, filterTarget) {
     var results = [];
-    var filterValue = $('#' + filterTarget).val();
+    var filterValue = $('#' + filterTarget).val().trim();
     if (filterValue) {
-      logToFilter.forEach(function(logEntity) {
-        if (logEntity[filterTarget].toString().toLowerCase().indexOf(filterValue) > -1) {
+      logsToFilter.forEach(function(logEntity) {
+        if (logEntity[filterTarget].toString().toLowerCase().indexOf(filterValue.toString().toLowerCase()) > -1) {
           results.push(logEntity);
         }
       });
     } else {
-      return logToFilter;
+      return logsToFilter;
     }
     return results;
   }
