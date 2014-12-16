@@ -8,7 +8,7 @@ OpenLogger is a tool that aim to help user to check large size of log file. This
 * Provide preview of large log file
 * Highly configurable filter function on large log file
 * Export filter result
-* easy to switch between different log styles
+* Easy to switch between different log styles
 
 ## How to use
 1. The config.ini file define the meta-data used in the tool, including
