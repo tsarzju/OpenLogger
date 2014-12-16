@@ -12,9 +12,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   var originStyle;
   $(function(){
     initMenu();
-
     initStyle();
-    initPreview();
     initFilter();
   });
 
@@ -74,6 +72,27 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
     });
 
     gui.Window.get().menu = menu;
+
+    $('#import').on('change', function(e) {
+      var path = $(this).val();
+      getPreview(path, config.previewSize, function(err, fileData){
+        clear();
+        updatePreview(path, addLineNum(1, fileData.split('\n')));
+        updateFilterView(currentStyle);
+        initLogEntity(originStyle, currentStyle);
+      });
+    });
+
+    $('#export').on('change', function(e) {
+      var path = $(this).val();
+      var filterLogs = $('#filterLogs').text();
+      var lines = filterLogs.split('\n');
+      var result = [];
+      lines.forEach(function(line) {
+        result.push(line.slice(line.indexOf('|')+2));
+      });
+      file.save(path, result.join('\n'), currentStyle.encoding);
+    });
   }
 
   function clear() {
@@ -114,24 +133,6 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         $('#filterControl').append('<span class="dynamic">'+ filter.name +' : </span>' +
           '<input id="'+ filter.id +'" class="'+ filter.type +' dynamic" type="text"></input>');
       }
-    });
-  }
-
-  function initPreview() {
-    $('#import').on('change', function(e) {
-      var path = $(this).val();
-      getPreview(path, config.previewSize, function(err, fileData){
-        clear();
-        updatePreview(path, addLineNum(1, fileData.split('\n')));
-        updateFilterView(currentStyle);
-        initLogEntity(originStyle, currentStyle);
-      });
-    });
-
-    $('#export').on('change', function(e) {
-      console.log('export click');
-      var path = $(this).val();
-      file.save(path, $('#filterLogs').text());
     });
   }
 
