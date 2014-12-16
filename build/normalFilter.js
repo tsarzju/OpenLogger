@@ -1,0 +1,2 @@
+/*! Open-Logger 2014-12-16 */
+define([],function(){function a(a,b,c){var d=[],e=a("#"+c).val().trim();return e?(b.forEach(function(a){a[c].toString().toLowerCase().indexOf(e.toString().toLowerCase())>-1&&d.push(a)}),d):b}return{doFilter:a}});

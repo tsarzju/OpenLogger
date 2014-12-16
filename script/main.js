@@ -64,7 +64,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
     });
 
     appendSubmenu(menu.items[0], 'Export', function(){
-
+      clickInput('export');
     });
 
     appendSeparator(menu.items[0]);
@@ -99,7 +99,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
           '<input id="startTime" class="dynamic"></input>' +
           '<span class="dynamic"> - </span>' +
           '<input id="endTime" class="dynamic"></input>');
-          
+
         $('#startTime').datetimepicker({
           dateFormat: currentStyle.dateFormat,
           timeFormat: currentStyle.timeFormat,
@@ -126,6 +126,12 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         updateFilterView(currentStyle);
         initLogEntity(originStyle, currentStyle);
       });
+    });
+
+    $('#export').on('change', function(e) {
+      console.log('export click');
+      var path = $(this).val();
+      file.save(path, $('#filterLogs').text());
     });
   }
 
@@ -260,8 +266,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         .on('pipe', function() {
           var linesWithNum = addLineNum(lineCount, fileLines);
           lineCount = lineCount + fileLines.length;
-          currentLog.originLog = linesWithNum.join('\n');
-          allLogs.push(currentLog);
+          if (currentLog) {
+            currentLog.originLog = linesWithNum.join('\n');
+            allLogs.push(currentLog);
+          }
           filterData(allLogs, true);
         });
     });
