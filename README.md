@@ -35,7 +35,7 @@ OpenLogger is a tool that aim to help user to check large size of log file. This
 5. Use File->Export to export filtered result. The encoding of the export file will remain the same with the imported log file.
 
 Here is a example of config.ini file
-```
+```json
 {
     "previewSize":3000,
     "blockSize":300,
