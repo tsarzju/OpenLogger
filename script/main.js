@@ -75,12 +75,14 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
 
     $('#import').on('change', function(e) {
       var path = $(this).val();
-      getPreview(path, config.previewSize, function(err, fileData){
-        clear();
-        updatePreview(path, addLineNum(1, fileData.split('\n')));
-        updateFilterView(currentStyle);
-        initLogEntity(originStyle, currentStyle);
-      });
+      if (path) {
+        getPreview(path, config.previewSize, function(err, fileData){
+          clear();
+          updatePreview(path, addLineNum(1, fileData.split('\n')));
+          updateFilterView(currentStyle);
+          initLogEntity(originStyle, currentStyle);
+        });
+      }
     });
 
     $('#export').on('change', function(e) {
