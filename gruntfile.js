@@ -12,7 +12,7 @@ module.exports = function(grunt){
             cwd: 'script/',      // Src matches are relative to this path.
             src: ['**/*.js'], // Actual pattern(s) to match.
             dest: 'build/',   // Destination path prefix.
-            ext: '.min.js',   // Dest filepaths will have this extension.
+            ext: '.js',   // Dest filepaths will have this extension.
             extDot: 'first'   // Extensions in filenames begin after the first dot
           }
         ]

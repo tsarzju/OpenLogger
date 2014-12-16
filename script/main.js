@@ -11,9 +11,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   var currentStyle;
   var originStyle;
   $(function(){
+    initMenu();
+
     initStyle();
     initPreview();
-    initMenu();
     initFilter();
   });
 
@@ -98,6 +99,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
           '<input id="startTime" class="dynamic"></input>' +
           '<span class="dynamic"> - </span>' +
           '<input id="endTime" class="dynamic"></input>');
+          
         $('#startTime').datetimepicker({
           dateFormat: currentStyle.dateFormat,
           timeFormat: currentStyle.timeFormat,
@@ -204,7 +206,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
           $('#status').text('finished');
         }
       };
-//
+
       new Lazy(fs.createReadStream(path).pipe(iconv.decodeStream(currentStyle.encoding)))
         .lines
         .map(String)
@@ -213,8 +215,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
           if (isNewLine) {
             if (currentLog) {
               var linesWithNum = addLineNum(lineCount, fileLines);
+
               lineCount = lineCount + fileLines.length;
               $('#lineCount').text(lineCount);
+
               currentLog.originLog = linesWithNum.join('\n');
               allLogs.push(currentLog);
               fileLines.length = 0;
