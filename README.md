@@ -2,19 +2,19 @@ OpenLogger
 ----------
 ## Introduction
 
-OpenLogger is a tool that aim to help user to check large size of log file. This tool is built on `node-webkit`, which support building desktop applications using HTML and JavaScript. 
+OpenLogger is a tool that aim to help user to check large size of log file. This tool is built on `node-webkit`, which support building desktop applications using HTML and JavaScript.
 
 ## Features
 * Provide preview of large log file
 * Highly configurable filter function on large log file
 * Export filter result
-* easy to switch between different log styles 
+* easy to switch between different log styles
 
 ## How to use
 1. The config.ini file define the meta-data used in the tool, including
  * previewSize : decide the least lines to show in preview function
  * blockSize : decide the block size that reading a file when performing filter function
- * styles : indicate the log format 
+ * styles : indicate the log format
     * name : style name
     * encoding : log encoding
     * dateFormat : the format of date
@@ -28,8 +28,13 @@ OpenLogger is a tool that aim to help user to check large size of log file. This
         * id : filter id, will be use in view
         * type : there are 3 types of filter: time, normal and message, they have different views
         * regex : regular expression for match this value
-    
-    Here is a example of config.ini file
+
+2. Prepare at least one style to use this tool, there are 2 default styles already in this config.ini, which are used in my company.
+3. Use File->Import to load log file, the preview will show automatically
+4. the filters are generated automatically based on the config.ini file, the filter function can be slow in the case that the fitlered result is large, so use the filter wisely because large result means nothing.
+5. Use File->Export to export filtered result. The encoding of the export file will remain the same with the imported log file.
+
+Here is a example of config.ini file
 ```
 {
         "previewSize":3000,
@@ -110,8 +115,3 @@ OpenLogger is a tool that aim to help user to check large size of log file. This
         ]
 }
 ```
-
-2. Prepare at least one style to use this tool, there are 2 default styles already in this config.ini, which are used in my company.
-3. Use File->Import to load log file, the preview will show automatically
-4. the filters are generated automatically based on the config.ini file, the filter function can be slow in the case that the fitlered result is large, so use the filter wisely because large result means nothing.
-5. Use File->Export to export filtered result. The encoding of the export file will remain the same with the imported log file.
