@@ -1,0 +1,46 @@
+<html>
+<head>
+  <title>
+    Open Logger
+  </title>
+  <link rel="stylesheet" href="../css/default.css" />
+  <link rel="stylesheet" href="../css/jquery-ui.css" />
+  <link rel="stylesheet" href="../node_modules/bootstrap/dist/css/bootstrap.css" />
+  <script src="../js/jquery-2.1.1.js"></script>
+  <script src="../js/jquery-ui.js"></script>
+  <script src="../js/jquery-ui-timepicker-addon.js"></script>
+  <script src="../node_modules/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="../build/main.js"></script>
+</head>
+<body>
+    <div id="styleControl">
+      <span class="title">Log Style</span>
+      <select id="styleSelect"></select>
+    </div>
+    <div id="previewControl" class="logDiv">
+      <span class="title">File Preview</span>
+    </div>
+    <div id="previewContent" class="logDiv">
+      <pre id="previewLogs"></pre>
+    </div>
+
+    <div id="filterControl" class="logDiv">
+      <span class="title">Filter</span>
+      <button type="button" id="startFilter" class="btn btn-default btn-xs">Start</button>
+    </div>
+    <div id="filterContent" class="logDiv">
+      <pre id="filterLogs"></pre>
+    </div>
+    <div class="logDiv">
+      <span class="title">Status : </span><span id="status" class="info"></span>
+    </div>
+    <div class="logDiv">
+      <span class="title">Processed Log Count: </span><span id="logCount" class="info"></span>
+      <span class="title">Processed Line Count: </span><span id="lineCount" class="info"></span>
+    </div>
+    <div class="logDiv">
+      <span class="title">Result Count : </span><span id="resultCount" class="info"></span>
+    </div>
+    <input id="import" type="file" style="display:none" accept="*" />
+</body>
+</html>
