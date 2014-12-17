@@ -87,13 +87,15 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
 
     $('#export').on('change', function(e) {
       var path = $(this).val();
-      var filterLogs = $('#filterLogs').text();
-      var lines = filterLogs.split('\n');
-      var result = [];
-      lines.forEach(function(line) {
-        result.push(line.slice(line.indexOf('|')+2));
-      });
-      file.save(path, result.join('\n'), currentStyle.encoding);
+      if (path) {
+        var filterLogs = $('#filterLogs').text();
+        var lines = filterLogs.split('\n');
+        var result = [];
+        lines.forEach(function(line) {
+          result.push(line.slice(line.indexOf('|')+2));
+        });
+        file.save(path, result.join('\n'), currentStyle.encoding);
+      }
     });
   }
 
