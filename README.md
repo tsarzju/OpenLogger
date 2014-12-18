@@ -10,17 +10,14 @@ OpenLogger is a tool that aim to help user to check large size of log file. This
 ```
 git clone https://github.com/tsarzju/OpenLogger.git
 ```
-
 2. Change directory to OpenLogger
 ```
 cd OpenLogger
 ```
-
 3. Run
 ```
 npm install
 ```
-
 4. Run the application(in Windows)
 ```
 nw .
