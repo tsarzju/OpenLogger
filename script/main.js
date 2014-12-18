@@ -105,6 +105,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
     $('#previewLogs').text('');
     $('#filterLogs').scrollTop(0);
     $('#filterLogs').text('');
+    $('#status').text('');
+    $('#resultCount').text('');
+    $('#logCount').text('');
+    $('#lineCount').text('');
   }
 
   function updatePreview(path, numLines) {
@@ -183,6 +187,8 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
       $('#filterLogs').text('');
       $('#status').text('processing');
       $('#resultCount').text('');
+      $('#logCount').text('');
+      $('#lineCount').text('');
 
       var path = gui.Window.get().title;
       var fileLines = [];
