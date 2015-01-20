@@ -1,2 +1,2 @@
-/*! Open-Logger 2014-12-16 */
-define(["fs","iconv-lite","config"],function(a,b,c){function d(d,e){a.readFile(d,function(a,f){if(!a){var g=b.decode(f,c.encoding);e(d,g)}})}function e(b,c){a.writeFile(b,c)}return{open:d,save:e}});
+/*! Open-Logger 2015-01-20 */
+define(["fs","iconv-lite","config"],function(a,b){function c(c,d,e){a.readFile(c,function(a,f){if(!a){var g=b.decode(f,e);d(c,g)}})}function d(c,d,e){var f=b.encode(d,e);a.writeFile(c,f)}return{open:c,save:d}});

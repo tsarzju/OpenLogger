@@ -1,0 +1,113 @@
+@import "compass/css3/border-radius";
+
+@mixin fixedTextarea($width, $height) {
+  width: $width;
+  min-width: $width;
+  max-width: $width;
+  height: $height;
+  min-height: $height;
+  max-height: $height;
+}
+
+textarea {
+  @include fixedTextarea(400px, 400px);
+}
+
+pre {
+  font-family: consolas, courier, monospace;
+  font-size: 1em;
+  line-height: 1.2em;
+  white-space: pre;
+  background-color: #ccccff;
+  color: black;
+  border: 1px solid #666666;
+  @include border-radius(1em);
+  padding: 1em;
+  margin: 1.2em 1em;
+  width: 100%;
+  height: 40%;
+}
+
+code {
+  font-family: monospace;
+}
+
+input {
+  margin: 10px 10px 10px;
+}
+
+input.normal {
+  width: 100px;
+}
+
+input.message {
+  width: 300px;
+}
+
+div {
+  border-bottom-style: solid;
+  border-width: 1px;
+  margin: 0px 10px 0px;
+}
+
+span.title {
+  color: blue;
+  font-size: 1.2em;
+  margin: 5px 10px 5px;
+}
+
+span.info {
+  color: red;
+  font-size: 1em;
+  margin: 5px 10px 5px;
+}
+
+.logDiv {
+  display: none;
+}
+
+input[type=datetime-local] {
+  margin: 5px 10px 5px;
+}
+
+.ui-timepicker-div {
+  .ui-widget-header {
+    margin-bottom: 8px;
+  }
+  dl {
+    text-align: left;
+    dt {
+      float: left;
+      clear: left;
+      padding: 0 0 0 5px;
+    }
+    dd {
+      margin: 0 10px 10px 45%;
+    }
+  }
+  td {
+    font-size: 90%;
+  }
+}
+
+.ui-tpicker-grid-label {
+  background: none;
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ui-timepicker-rtl {
+  direction: rtl;
+  dl {
+    text-align: right;
+    padding: 0 5px 0 0;
+    dt {
+      float: right;
+      clear: right;
+    }
+    dd {
+      margin: 0 45% 10px 10px;
+    }
+  }
+}

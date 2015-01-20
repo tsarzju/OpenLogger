@@ -1,2 +1,2 @@
-/*! Open-Logger 2014-12-16 */
-define(["fs"],function(a){var b={};return b=JSON.parse(a.readFileSync("config.ini","utf8"))});
+/*! Open-Logger 2015-01-20 */
+define(["fs","path"],function(a,b){var c={},d=b.dirname(process.execPath),e="config.ini",f=a.existsSync(d+"/"+e);return f&&(e=d+"/"+e),c=JSON.parse(a.readFileSync(e,"utf8"))});
