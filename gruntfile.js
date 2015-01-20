@@ -31,7 +31,7 @@ module.exports = function(grunt){
     },
     watch:{
       css: {
-        files: ['sass/*.sass'],
+        files: ['scss/*.scss'],
         tasks: ['compass']
       },
       jshint: {
@@ -42,7 +42,7 @@ module.exports = function(grunt){
     compass: {
       dist: {
         options: {
-          sassDir: 'sass',
+          sassDir: 'scss',
           cssDir: 'css'
         }
       }
