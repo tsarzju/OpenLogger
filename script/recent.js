@@ -24,8 +24,14 @@ define(['fs', 'path'], function(fs, path){
 
     fs.writeFileSync(fileName, this.list.join('\n') ,'utf8');
   };
+
+  this.clearRecent = function() {
+    this.list = [];
+  };
+
   return {
     list : this.list,
-    addRecent : this.addRecent
+    addRecent : this.addRecent,
+    clearRecent : this.clearRecent
   };
 });
