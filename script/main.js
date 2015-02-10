@@ -153,13 +153,13 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
           '<input id="endTime" class="dynamic"></input>');
 
         $('#startTime').datetimepicker({
-          dateFormat: currentStyle.dateFormat,
-          timeFormat: currentStyle.timeFormat,
+          dateFormat: currentStyle.datePickerFormat,
+          timeFormat: currentStyle.timePickerFormat,
         });
 
         $('#endTime').datetimepicker({
-          dateFormat: currentStyle.dateFormat,
-          timeFormat: currentStyle.timeFormat,
+          dateFormat: currentStyle.datePickerFormat,
+          timeFormat: currentStyle.timePickerFormat,
         });
 
       } else if (filter.type === 'normal' || filter.type === 'message') {
@@ -335,6 +335,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
     return style.dateFormat + ' ' + style.timeFormat + style.lastFormat;
   }
 
+  function getPickerFormat(style) {
+    return style.dateFormat + ' ' + style.timeFormat;
+  }
+
   function filterTime(logsToFilter) {
     var startTimeStr = $('#startTime').val();
     var endTimeStr = $('#endTime').val();
@@ -343,12 +347,17 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
     var startIndex = 0;
     var endIndex = logsToFilter.length;
     var fullFormat = getFullFormat(currentStyle);
+    console.log('fullFormat ' + fullFormat);
     if (startTimeStr) {
-      startTime = moment(startTimeStr, fullFormat).format('x');
+      console.log('startTimeStr ' + startTimeStr);
+      startTime = moment(startTimeStr, getPickerFormat(currentStyle));
+      console.log('startTime ' + startTime);
       startIndex = binaryIndexOf(logsToFilter, startTime);
     }
     if (endTimeStr) {
-      endTime = moment(endTimeStr, fullFormat).format('x');
+      console.log('endTimeStr ' + endTimeStr);
+      endTime = moment(endTimeStr, getPickerFormat(currentStyle));
+      console.log('endTime ' + endTime);
       endIndex = binaryIndexOf(logsToFilter, endTime);
     }
     var results = logsToFilter.slice(startIndex, endIndex);
@@ -366,10 +375,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
       currentIndex = (minIndex + maxIndex) / 2 | 0;
       currentElement = logsToFilter[currentIndex].getFormatTime(fullFormat);
 
-      if (currentElement < searchElement) {
+      if (currentElement.diff(searchElement) < 0) {
         minIndex = currentIndex + 1;
       }
-      else if (currentElement > searchElement) {
+      else if (currentElement.diff(searchElement) > 0) {
         maxIndex = currentIndex - 1;
       }
       else {
