@@ -88,6 +88,11 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
       });
     });
 
+    appendSubmenu(menu.items[0], 'Clear Recent Files List...', function(){
+      recent.clearRecent();
+      addMenuItems();
+    });
+
     appendSeparator(menu.items[0]);
 
     appendSubmenu(menu.items[0], 'Exit', function(){
