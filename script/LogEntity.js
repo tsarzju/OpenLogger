@@ -8,7 +8,8 @@ define(['config', 'moment'], function(config, moment) {
     if (this.formetTime > 0) {
       return this.formatTime;
     } else {
-      this.formatTime = moment(this.time, fullFormat).format('x');
+      this.formatTime = moment(this.time, fullFormat);
+      console.log('formatTime ' + this.formatTime);
       return this.formatTime;
     }
   }
