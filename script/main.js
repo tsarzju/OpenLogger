@@ -185,15 +185,27 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   function initFilter() {
     var readStream;
     $('#endFilter').on('click', function() {
-
       if (readStream !== undefined) {
         readStream.close();
         readStream = undefined;
+        $('#status').text('Canceled');
       }
     });
+
+    $(document).keypress(function (e) {
+      if (e.which === 13) {
+        if ($('#status').html() === 'Processing') {
+          $('#endFilter').click();
+        } else {
+          $('#startFilter').click();
+        }
+        return false;
+      }
+    });
+
     $('#startFilter').on('click', function(){
       $('#filterLogs').text('');
-      $('#status').text('processing');
+      $('#status').text('Processing');
       $('#resultCount').text('');
       $('#logCount').text('');
       $('#lineCount').text('');
@@ -228,7 +240,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         resultCount += resultLogs.length;
         $('#resultCount').text(resultCount);
         if (isLast === true) {
-          $('#status').text('finished');
+          $('#status').text('Finished');
         }
       };
 
@@ -256,7 +268,6 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
             if (logCount % config.blockSize === 0) {
               filterData(allLogs, false);
               allLogs.length = 0;
-              $('#logCount').text(logCount);
             }
 
             var logMatch = line.match(logPattern);
