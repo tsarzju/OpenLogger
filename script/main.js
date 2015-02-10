@@ -5,8 +5,8 @@ requirejs.config({
   nodeRequire: require
 });
 
-requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'normalFilter'],
-  function(fs, iconv, Lazy, file, config, LogEntity, moment, normalFilter){
+requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'moment', 'normalFilter'],
+  function(fs, iconv, Lazy, file, config, recent, LogEntity, moment, normalFilter){
   var gui = require('nw.gui');
   var currentStyle;
   var originStyle;
@@ -49,8 +49,23 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
     $('#'+id).click();
   }
 
-  function initMenu() {
-    var menu = new gui.Menu({type : 'menubar'});
+  function updatePath(path) {
+    if (path) {
+      recent.addRecent(path);
+
+      addMenuItems();
+
+      getPreview(path, config.previewSize, function(err, fileData){
+        clear();
+        updatePreview(path, addLineNum(1, fileData.split('\n')));
+        updateFilterView(currentStyle);
+        initLogEntity(originStyle, currentStyle);
+      });
+    }
+  }
+
+  function addMenuItems() {
+    this.menu = new gui.Menu({type : 'menubar'});
 
     menu.append(new gui.MenuItem({
       label : 'File',
@@ -67,22 +82,27 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
 
     appendSeparator(menu.items[0]);
 
+    recent.list.forEach(function(recentPath) {
+      appendSubmenu(menu.items[0], recentPath, function(){
+        updatePath(recentPath);
+      });
+    });
+
+    appendSeparator(menu.items[0]);
+
     appendSubmenu(menu.items[0], 'Exit', function(){
       gui.Window.get().close();
     });
 
-    gui.Window.get().menu = menu;
+    gui.Window.get().menu = this.menu;
+  }
+
+  function initMenu() {
+    addMenuItems();
 
     $('#import').on('change', function(e) {
       var path = $(this).val();
-      if (path) {
-        getPreview(path, config.previewSize, function(err, fileData){
-          clear();
-          updatePreview(path, addLineNum(1, fileData.split('\n')));
-          updateFilterView(currentStyle);
-          initLogEntity(originStyle, currentStyle);
-        });
-      }
+      updatePath(path);
     });
 
     $('#export').on('change', function(e) {
@@ -185,15 +205,27 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   function initFilter() {
     var readStream;
     $('#endFilter').on('click', function() {
-
       if (readStream !== undefined) {
         readStream.close();
         readStream = undefined;
+        $('#status').text('Canceled');
       }
     });
+
+    $(document).keypress(function (e) {
+      if (e.which === 13) {
+        if ($('#status').html() === 'Processing') {
+          $('#endFilter').click();
+        } else {
+          $('#startFilter').click();
+        }
+        return false;
+      }
+    });
+
     $('#startFilter').on('click', function(){
       $('#filterLogs').text('');
-      $('#status').text('processing');
+      $('#status').text('Processing');
       $('#resultCount').text('');
       $('#logCount').text('');
       $('#lineCount').text('');
@@ -228,7 +260,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         resultCount += resultLogs.length;
         $('#resultCount').text(resultCount);
         if (isLast === true) {
-          $('#status').text('finished');
+          $('#status').text('Finished');
         }
       };
 
@@ -256,7 +288,6 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
             if (logCount % config.blockSize === 0) {
               filterData(allLogs, false);
               allLogs.length = 0;
-              $('#logCount').text(logCount);
             }
 
             var logMatch = line.match(logPattern);
