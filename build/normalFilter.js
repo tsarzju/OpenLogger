@@ -1,2 +1,2 @@
-/*! Open-Logger 2015-01-20 */
+/*! Open-Logger 2015-02-10 */
 define([],function(){function a(a,b,c){var d=[],e=a("#"+c).val().trim();return e?(b.forEach(function(a){a[c].toString().toLowerCase().indexOf(e.toString().toLowerCase())>-1&&d.push(a)}),d):b}return{doFilter:a}});

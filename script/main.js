@@ -183,6 +183,14 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
   }
 
   function initFilter() {
+    var readStream;
+    $('#endFilter').on('click', function() {
+
+      if (readStream !== undefined) {
+        readStream.close();
+        readStream = undefined;
+      }
+    });
     $('#startFilter').on('click', function(){
       $('#filterLogs').text('');
       $('#status').text('processing');
@@ -224,7 +232,8 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'LogEntity', 'moment', 'n
         }
       };
 
-      new Lazy(fs.createReadStream(path).pipe(iconv.decodeStream(currentStyle.encoding)))
+      readStream = fs.createReadStream(path);
+      new Lazy(readStream.pipe(iconv.decodeStream(currentStyle.encoding)))
         .lines
         .map(String)
         .forEach(function(line) {

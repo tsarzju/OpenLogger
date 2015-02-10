@@ -1,2 +1,2 @@
-/*! Open-Logger 2015-01-20 */
+/*! Open-Logger 2015-02-10 */
 define(["fs","iconv-lite","config"],function(a,b){function c(c,d,e){a.readFile(c,function(a,f){if(!a){var g=b.decode(f,e);d(c,g)}})}function d(c,d,e){var f=b.encode(d,e);a.writeFile(c,f)}return{open:c,save:d}});
