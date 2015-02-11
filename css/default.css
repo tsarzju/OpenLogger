@@ -135,3 +135,8 @@ input[type=datetime-local] {
 .ui-timepicker-rtl dl dd {
   margin: 0 45% 10px 10px;
 }
+
+/* line 121, ../scss/default.scss */
+.dynamic {
+  margin: 2px;
+}
