@@ -5,6 +5,10 @@ requirejs.config({
   nodeRequire: require
 });
 
+console.log('process.cwd() ' + process.cwd());
+console.log('process.execPath  ' + process.execPath );
+console.log('process.env.PWD ' +process.env.PWD);
+
 requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'moment', 'normalFilter'],
   function(fs, iconv, Lazy, file, config, recent, LogEntity, moment, normalFilter){
   var gui = require('nw.gui');

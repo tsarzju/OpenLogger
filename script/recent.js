@@ -1,12 +1,18 @@
 define(['fs', 'path'], function(fs, path){
-  var execPath = path.dirname( process.execPath );
-  var fileName = 'recent.dat';
-  var exists = fs.accessSync(fileName, fs.F_OK);
-  if (exists) {
-    fileName = execPath+'/'+fileName;
+  var fileName = process.cwd() + '\\recent.dat';
+  try {
+    fs.accessSync(fileName, fs.F_OK);
+  } catch(err) {
+    var execPath = path.dirname( process.execPath );
+    fileName = execPath+'/'+'recent.dat';
   }
 
   this.list = fs.readFileSync(fileName, 'utf8').trim().split('\n');
+  this.list.forEach(function(path, index) {
+    if (path.length === 0) {
+      this.list.splice(index, 1);
+    }
+  });
 
   function writeList() {
     var exists = fs.accessSync(fileName, fs.F_OK);
