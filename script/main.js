@@ -5,6 +5,10 @@ requirejs.config({
   nodeRequire: require
 });
 
+console.log('process.cwd() ' + process.cwd());
+console.log('process.execPath  ' + process.execPath );
+console.log('process.env.PWD ' +process.env.PWD);
+
 requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'moment', 'normalFilter'],
   function(fs, iconv, Lazy, file, config, recent, LogEntity, moment, normalFilter){
   var gui = require('nw.gui');
@@ -347,17 +351,12 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
     var startIndex = 0;
     var endIndex = logsToFilter.length;
     var fullFormat = getFullFormat(currentStyle);
-    console.log('fullFormat ' + fullFormat);
     if (startTimeStr) {
-      console.log('startTimeStr ' + startTimeStr);
       startTime = moment(startTimeStr, getPickerFormat(currentStyle));
-      console.log('startTime ' + startTime);
       startIndex = binaryIndexOf(logsToFilter, startTime);
     }
     if (endTimeStr) {
-      console.log('endTimeStr ' + endTimeStr);
       endTime = moment(endTimeStr, getPickerFormat(currentStyle));
-      console.log('endTime ' + endTime);
       endIndex = binaryIndexOf(logsToFilter, endTime);
     }
     var results = logsToFilter.slice(startIndex, endIndex);

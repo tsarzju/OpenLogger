@@ -9,7 +9,6 @@ define(['config', 'moment'], function(config, moment) {
       return this.formatTime;
     } else {
       this.formatTime = moment(this.time, fullFormat);
-      console.log('formatTime ' + this.formatTime);
       return this.formatTime;
     }
   }
