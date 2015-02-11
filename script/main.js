@@ -147,7 +147,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
     var filters = currentStyle.filters;
     filters.forEach(function(filter) {
       if (filter.type === 'time') {
-        $('#filterControl').append('<span class="dynamic">' + filter.name + ' : </span>' +
+        $('#filterControl').append('<span class="dynamic">' + filter.name + ' :</span>' +
           '<input id="startTime" class="dynamic"></input>' +
           '<span class="dynamic"> - </span>' +
           '<input id="endTime" class="dynamic"></input>');
@@ -163,7 +163,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
         });
 
       } else if (filter.type === 'normal' || filter.type === 'message') {
-        $('#filterControl').append('<span class="dynamic">'+ filter.name +' : </span>' +
+        $('#filterControl').append('<span class="dynamic">'+ filter.name +' :</span>' +
           '<input id="'+ filter.id +'" class="'+ filter.type +' dynamic" type="text"></input>');
       }
     });
