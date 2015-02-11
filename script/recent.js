@@ -8,6 +8,15 @@ define(['fs', 'path'], function(fs, path){
 
   this.list = fs.readFileSync(fileName, 'utf8').trim().split('\n');
 
+  function writeList() {
+    var exists = fs.accessSync(fileName, fs.F_OK);
+    if (exists) {
+      fileName = execPath+'/'+fileName;
+    }
+
+    fs.writeFileSync(fileName, this.list.join('\n') ,'utf8');
+  }
+
   this.addRecent = function(recentPath) {
     var idx = this.list.indexOf(recentPath);
     if (idx >= 0) {
@@ -17,16 +26,12 @@ define(['fs', 'path'], function(fs, path){
       this.list.splice(14, 1);
     }
     this.list.unshift(recentPath);
-    var exists = fs.accessSync(fileName, fs.F_OK);
-    if (exists) {
-      fileName = execPath+'/'+fileName;
-    }
-
-    fs.writeFileSync(fileName, this.list.join('\n') ,'utf8');
+    writeList();
   };
 
   this.clearRecent = function() {
     this.list = [];
+    writeList();
   };
 
   return {

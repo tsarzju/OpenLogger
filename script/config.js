@@ -6,7 +6,7 @@ define(['fs', 'path'], function(fs, path){
   if (exists) {
     fileName = execPath+'/'+fileName;
   }
-
+  console.log('execPath ' + execPath);
   config = JSON.parse(fs.readFileSync(fileName, 'utf8'));
 
   return config;

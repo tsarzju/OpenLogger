@@ -347,17 +347,12 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
     var startIndex = 0;
     var endIndex = logsToFilter.length;
     var fullFormat = getFullFormat(currentStyle);
-    console.log('fullFormat ' + fullFormat);
     if (startTimeStr) {
-      console.log('startTimeStr ' + startTimeStr);
       startTime = moment(startTimeStr, getPickerFormat(currentStyle));
-      console.log('startTime ' + startTime);
       startIndex = binaryIndexOf(logsToFilter, startTime);
     }
     if (endTimeStr) {
-      console.log('endTimeStr ' + endTimeStr);
       endTime = moment(endTimeStr, getPickerFormat(currentStyle));
-      console.log('endTime ' + endTime);
       endIndex = binaryIndexOf(logsToFilter, endTime);
     }
     var results = logsToFilter.slice(startIndex, endIndex);
