@@ -1,5 +1,5 @@
 define(['fs', 'path'], function(fs, path){
-  var fileName = process.cwd() + '\\recent.dat';
+  var fileName = path.resolve(__dirname, 'recent.dat');
   try {
     fs.accessSync(fileName, fs.F_OK);
   } catch(err) {

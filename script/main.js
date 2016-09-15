@@ -317,7 +317,7 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
               $('#lineCount').text(lineCount);
               return;
             } else {
-              var key = currentStyle.filters[currentStyle.filters.length-1];
+              var key = currentStyle.filters[currentStyle.filters.length-1].id;
               currentLog[key] = currentLog[key] + line;
               fileLines.push(line);
             }
@@ -336,6 +336,10 @@ requirejs(['fs','iconv-lite','lazy', 'file', 'config', 'recent', 'LogEntity', 'm
   }
 
   function getFullFormat(style) {
+    var dateFormat = style.dateFormat;
+    if (dateFormat === undefined || dateFormat.trim().length === 0) {
+      return style.timeFormat + style.lastFormat;
+    }
     return style.dateFormat + ' ' + style.timeFormat + style.lastFormat;
   }
 
